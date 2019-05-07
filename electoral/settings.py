@@ -30,7 +30,8 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
-    #'jet.dashboard',
+    #JET
+    'jet.dashboard',
     'jet',
     #Django
     'django.contrib.admin',
@@ -136,3 +137,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    '/root/project/static/',
+    'D:\\Desarrollos\\web\\electoral\\electoral\\',
+)
