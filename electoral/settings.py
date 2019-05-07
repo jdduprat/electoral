@@ -139,5 +139,5 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = (
     '/root/project/static/',
-    'D:\\Desarrollos\\web\\electoral\\electoral\\',
+    'd:/desarrollos/web/electoral/electoral/static/',
 )
