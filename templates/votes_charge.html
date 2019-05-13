@@ -144,7 +144,8 @@
         var table = $('#table-select').val();
         var category = $('#category-select').val();
 
-        console.log(school + '-' + table + '-' + category);
+        $('tr').hide();
+        $('tr[school="'+school+'"][table="'+table+'"][category="'+category+'"]').show();
       }
     });
 
