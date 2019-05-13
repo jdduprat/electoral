@@ -1,4 +1,6 @@
 *.pyc
-static/
+static/admin/
+static/jet/
+static/jet.dashboard/
+static/range_filter/
 venv/
-!static/mines/

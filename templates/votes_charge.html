@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="content-i">
+  <div class="content-box">
+    <div class="row pt-4">
+      <div class="col-sm-12">
+        <div class="element-wrapper">
+          <h6 class="element-header">
+            Carga de Conteo de Votos
+          </h6>
+          <div class="element-box-tp">
+            <div class="controls-above-table">
+              <form class="form-horizontal">
+                <div class="row">
+                  <div class="col-sm">
+                    <div class="form-group row">
+                      <label for="school-select" class="control-label col-xs-3" style="margin-right: 5px;">Escuela: </label>
+                      <div class="col-xs-9">
+                        <select class="form-control form-control-sm js-select2" id="school-select">
+                          {% for s in schools %}
+                            <option value="{{s.pk}}" class="school-change">{{s.name}}</option>
+                          {% endfor %}
+                        </select>         
+                      </div>             
+                    </div>              
+                  </div> 
+                  <div class="col-sm-3">
+                    <div class="form-group row">
+                      <label for="table-select" class="control-label col-xs-3" style="margin-right: 5px;">Mesa: </label>
+                      <div class="col-xs-9">
+                        <select class="form-control form-control-sm js-select2" id="table-select">
+                          {% for t in tables %}
+                            <option value="{{t.pk}}" class="table-change">{{t.name}}</option>
+                          {% endfor %}
+                        </select>      
+                      </div>
+                    </div>    
+                  </div>
+                  <div class="col-sm-3">
+                    <div class="form-group row">
+                      <label for="category-select" class="control-label col-xs-3" style="margin-right: 5px;">Cargo: </label>
+                      <div class="col-xs-9">
+                        <select class="form-control form-control-sm js-select2" id="category-select">
+                          {% for c in categories %}
+                            <option value="{{c.pk}}" class="category-change">{{c.name}}</option>
+                          {% endfor %}
+                        </select>      
+                      </div>
+                    </div>    
+                  </div>
+                  <div class="col-sm-3" style="text-align: right;">
+                    <a class="btn btn-sm btn-secondary" href="#">Download CSV</a>
+                    <a class="btn btn-sm btn-secondary" href="#">Print PDF</a>
+                    <a class="btn btn-sm btn-primary" href="#">Guardar</a>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered table-lg table-v2 table-striped" id="myTable">
+                <thead>
+                  <tr>
+                    <th>
+                      Partido
+                    </th>
+                    <th>
+                      Lista
+                    </th>
+                    <th>
+                      Cantidad
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for v in votes %}
+                  <tr school={{v.table.school.pk}} table={{v.table.pk}} category={{v.category.pk}}>
+                    <td>
+                      {{v.electoral_list.party}}
+                    </td>
+                    <td>
+                      {{v.electoral_list}}
+                    </td>
+                    <td>
+                      <input type="text" class="form-control form-control-sm rounded bright" value={{v.quantity}}>
+                    </td>
+                  </tr>
+                  {%endfor%}
+                </tbody>
+              </table>
+            </div>                      
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block extra_js%}
+
+<script>
+    $(document).ready( function () {
+      $('#myTable').DataTable({
+        language: {
+          "decimal": "",
+          "emptyTable": "No hay información",
+          "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+          "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+          "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+          "infoPostFix": "",
+          "thousands": ",",
+          "lengthMenu": "Mostrar _MENU_ Entradas",
+          "loadingRecords": "Cargando...",
+          "processing": "Procesando...",
+          "search": "Buscar:",
+          "zeroRecords": "Sin resultados encontrados",
+          "paginate": {
+              "first": "Primero",
+              "last": "Ultimo",
+              "next": "Siguiente",
+              "previous": "Anterior"
+          }
+        },
+        responsive: true,
+        paging: false,
+        searching: false,
+      });
+
+      $('.js-select2').select2();
+
+      $('#school-select').on('select2:select', function (e) {
+        filter();
+      });
+      $('#table-select').on('select2:select', function (e) {
+        filter();
+      });
+      $('#category-select').on('select2:select', function (e) {
+        filter();
+      });
+
+      function filter(){
+        var school = $('#school-select').val();
+        var table = $('#table-select').val();
+        var category = $('#category-select').val();
+
+        console.log(school + '-' + table + '-' + category);
+      }
+    });
+
+    
+    
+</script>
+
+{% endblock extra_js%}

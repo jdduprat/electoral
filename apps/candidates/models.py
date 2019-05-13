@@ -45,7 +45,7 @@ class ElectoralList(models.Model):
     party = models.ForeignKey(Party, on_delete=models.DO_NOTHING, blank=False, null=False, verbose_name=u'Partido')
 
     def __str__(self):
-        return '%s %s' % (self.party, self.name)
+        return self.name
     
     class Meta:
         verbose_name = 'lista'

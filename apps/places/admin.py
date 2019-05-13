@@ -12,7 +12,7 @@ def to_assign(self, request, queryset):
         message_bit = u"1 escuela fué"
     else:
         message_bit = "%s escuelas fueron" % rows_updated
-    self.message_user(request, "%s asignada/s a " % message_bit + str(user.name))
+    self.message_user(request, "%s asignada/s a " % message_bit + str(request.user))
 
 to_assign.short_description = 'Asignar usuario a escuela/s seleccionada/s'
 
@@ -23,18 +23,18 @@ class UpdateActionForm(ActionForm):
 
 class SchoolAdmin(admin.ModelAdmin):    
     list_display = ['name', 'address', 'city', 'assigned_to']
-    list_filter = ['city', 'city__department__province', 'assigned_to']
+    list_filter = ['city__department__province', 'city', 'assigned_to']
     fields= ['name', 'address', 'city', 'assigned_to']
     actions = [to_assign, ]
     action_form = UpdateActionForm
 
-    def get_queryset(self, request):
-        qs = super(SchoolAdmin, self).get_queryset(request)
+#    def get_queryset(self, request):
+#        qs = super(SchoolAdmin, self).get_queryset(request)
 
-        if request.user.has_perm('voto.can_read_assigned_schools'):
-            return qs.filter(assigned_to=request.user)
-        else:
-            return qs
+#        if request.user.has_perm('voto.can_read_assigned_schools'):
+#            return qs.filter(assigned_to=request.user)
+#        else:
+#            return qs
 
 class TableAdmin(admin.ModelAdmin): 
     list_display = ['name', 'school', 'elctors_qty']
