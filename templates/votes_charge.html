@@ -51,8 +51,8 @@
                     </div>    
                   </div>
                   <div class="col-sm-3" style="text-align: right;">
-                    <a class="btn btn-sm btn-secondary" href="#">Download CSV</a>
-                    <a class="btn btn-sm btn-secondary" href="#">Print PDF</a>
+                    <!--a class="btn btn-sm btn-secondary" href="#">Download CSV</a>
+                    <a class="btn btn-sm btn-secondary" href="#">Print PDF</a -->
                     <a class="btn btn-sm btn-primary" href="#">Guardar</a>
                   </div>
                 </div>
@@ -83,7 +83,7 @@
                       {{v.electoral_list}}
                     </td>
                     <td>
-                      <input type="text" class="form-control form-control-sm rounded bright" value={{v.quantity}}>
+                      <input type="number" class="form-control bright" value={{v.quantity}} onchange="update_vote({{v.pk}}, this)">
                     </td>
                   </tr>
                   {%endfor%}
@@ -124,8 +124,10 @@
         },
         responsive: true,
         paging: false,
-        searching: false,
+        searching: false        
       });
+
+      $("input:text").focus(function() { $(this).select(); } );
 
       $('.js-select2').select2();
 
@@ -149,7 +151,30 @@
       }
     });
 
+    var token = '{{csrf_token}}';
     
+    function update_vote( id, obj ) {
+      $.ajax({
+            type: 'POST',
+            headers: { "X-CSRFToken": token },
+            url : "/update_vote/",
+            data:{ 'pk':id, 'qty': obj.value },
+            cache: false,
+            success: function(data){
+                obj.setAttribute("saved", "");
+            },
+            fail: function (data) {
+                console.log("Error: " + data);
+            }                
+      });
+    }
+
+    function update_all() {
+      $('input:text').filter(':saved').each(function(){
+        $(this).change();
+      })
+    }
+
     
 </script>
 
