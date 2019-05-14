@@ -53,7 +53,7 @@
                   <div class="col-sm-3" style="text-align: right;">
                     <!--a class="btn btn-sm btn-secondary" href="#">Download CSV</a>
                     <a class="btn btn-sm btn-secondary" href="#">Print PDF</a -->
-                    <a class="btn btn-sm btn-primary" href="#">Guardar</a>
+                    <a class="btn btn-sm btn-primary" id="save-btn" href="#">Guardar</a>
                   </div>
                 </div>
               </form>
@@ -124,22 +124,17 @@
         },
         responsive: true,
         paging: false,
-        searching: false        
+        searching: false,
+        info: false        
       });
 
       $("input:text").focus(function() { $(this).select(); } );
 
       $('.js-select2').select2();
 
-      $('#school-select').on('select2:select', function (e) {
-        filter();
-      });
-      $('#table-select').on('select2:select', function (e) {
-        filter();
-      });
-      $('#category-select').on('select2:select', function (e) {
-        filter();
-      });
+      $('#school-select').on('select2:select', filter);
+      $('#table-select').on('select2:select', filter);
+      $('#category-select').on('select2:select', filter);
 
       function filter(){
         var school = $('#school-select').val();
@@ -149,8 +144,19 @@
         $('tr').hide();
         $('tr[school="'+school+'"][table="'+table+'"][category="'+category+'"]').show();
       }
-    });
 
+      function update_all() {
+        $('.controls-above-table').alert();
+        $('input[saved!=true]').each(function(){
+          $(this).change();
+        });
+        $('.controls-above-table').alert('close');
+      }
+
+      $('#save-btn').on('click', update_all);
+      filter();    
+    });
+    
     var token = '{{csrf_token}}';
     
     function update_vote( id, obj ) {
@@ -168,14 +174,6 @@
             }                
       });
     }
-
-    function update_all() {
-      $('input:text').filter(':saved').each(function(){
-        $(this).change();
-      })
-    }
-
-    
 </script>
 
 {% endblock extra_js%}
