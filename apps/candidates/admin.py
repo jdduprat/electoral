@@ -5,10 +5,11 @@ from apps.places.models import Table
 
 def create_votes(self, request, queryset):
     for obj in queryset:
-        cant = Voto.objects.filter(election = obj.id).count()
-        if cant > 0 or not obj.current:
-            #Ya existen votos para la elección
-            pass
+        votes = Voto.objects.filter(election = obj.id)
+        if votes.count() > 0 or not obj.current:
+            #Exists votes for this election
+            #votes.delete()
+            self.message_user(request, "La elección seleccionada no está Vigente o ya posee votos.")
         else:
             #Creo votos por mesa, lista y categoria de la eleccion
             categories = Category.objects.filter(election = obj.id)
@@ -17,12 +18,15 @@ def create_votes(self, request, queryset):
 
             count = 0
             for table in tables:
-                for el in electoral_lists:
-                    for category in categories:
-                        count += 1
-                        Voto.objects.create(created_by=request.user, election=obj, table=table, category=category, electoral_list=el, quantity=0)
+                for category in categories:
+                    if category.is_listless:
+                        Voto.objects.create(created_by=request.user, election=obj, table=table, category=category, quantity=0)
+                    else:
+                        for el in electoral_lists:                    
+                            count += 1
+                            Voto.objects.create(created_by=request.user, election=obj, table=table, category=category, electoral_list=el, quantity=0)
 
-    self.message_user(request, "%s Registros creados" % count)
+            self.message_user(request, "%s Registros creados" % count)
 
 create_votes.short_description = "Crear Registros para Conteo de Votos"
 

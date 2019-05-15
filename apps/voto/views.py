@@ -12,8 +12,8 @@ def votesList(request):
     context = {}
     context['schools'] = School.objects.filter(assigned_to = request.user)
     context['tables'] = Table.objects.filter(school__assigned_to = request.user)
-    context['categories'] = Category.objects.all()
-    context['votes'] = Voto.objects.filter(table__school__assigned_to = request.user)
+    context['categories'] = Category.objects.filter(election__current=True)
+    context['votes'] = Voto.objects.filter(table__school__assigned_to = request.user, election__current=True)
     
     return render(request, 'votes_charge.html', context)
 
@@ -22,13 +22,10 @@ def updateVote(request):
     if request.is_ajax():
         id = request.POST.get('pk', None)
         qty = request.POST.get('qty', None)
-        print(str(id) + " " + str(qty))
-        #try:
+        
         vote = Voto.objects.get(pk=id)
         vote.quantity = qty
         vote.save()
-        #except (Voto.DoesNotExist, DatabaseError, BaseException) as e:
-        #    raise HttpResponse('Error! ')
                     
         return HttpResponse('success')
     else:

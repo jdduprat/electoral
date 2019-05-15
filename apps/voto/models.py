@@ -8,10 +8,10 @@ class Voto(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, verbose_name=u'Creado por')
     created_date = models.DateField(verbose_name=u'Fecha Creación', auto_now=True)
 
-    election = models.ForeignKey(Election, on_delete=models.DO_NOTHING, blank=False, null=False, verbose_name=u'elección')
-    table = models.ForeignKey(Table, on_delete=models.DO_NOTHING, blank=False, null=False, verbose_name=u'mesa')
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, blank=False, null=False, verbose_name=u'categoría')
-    electoral_list = models.ForeignKey(ElectoralList, on_delete=models.DO_NOTHING, blank=True, null=True, verbose_name=u'lista') 
+    election = models.ForeignKey(Election, on_delete=models.CASCADE, blank=False, null=False, verbose_name=u'elección')
+    table = models.ForeignKey(Table, on_delete=models.CASCADE, blank=False, null=False, verbose_name=u'mesa')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=False, null=False, verbose_name=u'categoría')
+    electoral_list = models.ForeignKey(ElectoralList, on_delete=models.CASCADE, blank=True, null=True, verbose_name=u'lista') 
     quantity = models.IntegerField(blank=False, null=False,verbose_name=u'cantidad')
     
     def __str__(self):

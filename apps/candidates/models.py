@@ -3,6 +3,7 @@ from django.db import models
 class Category(models.Model):
 
     name = models.CharField(verbose_name=u'Nombre', blank=False, null=False, max_length=60)
+    is_listless = models.BooleanField(verbose_name=u'Sin Lista', blank=True, null=True)
 
     def __str__(self):
         return self.name
