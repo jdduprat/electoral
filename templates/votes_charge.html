@@ -32,13 +32,13 @@
                       <div class="col-sm-9">
                         <select class="form-control form-control-sm js-select2" id="table-select" style="width:100%">
                           {% for t in tables %}
-                            <option value="{{t.pk}}" class="table-change">{{t.name}}</option>
+                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}">{{t.name}}</option>
                           {% endfor %}
                         </select>      
                       </div>
                     </div>    
                   </div>
-                  <div class="col-sm-3">
+                  <!--div class="col-sm-3">
                     <div class="form-group row">
                       <label for="category-select" class="control-label col-xs-3" style="margin-right: 5px;">Cargo: </label>
                       <div class="col-sm-9">
@@ -49,7 +49,7 @@
                         </select>      
                       </div>
                     </div>    
-                  </div>
+                  </div-->
                   <div class="col-sm-3" style="text-align: right;">
                     <!--a class="btn btn-sm btn-secondary" href="#">Download CSV</a>
                     <a class="btn btn-sm btn-secondary" href="#">Print PDF</a -->
@@ -62,19 +62,26 @@
               <table class="table table-bordered table-lg table-v2 table-striped" id="myTable">
                 <thead>
                   <tr>
-                    <th>
+                    <th rowspan="2" data-valign="middle">
                       Partido
                     </th>
-                    <th>
+                    <th rowspan="2" data-valign="middle">
                       Lista
                     </th>
-                    <th>
+                    <th colspan="{{categories.count}}">
                       Cantidad
                     </th>
                   </tr>
+                  <tr>
+                    {% for c in categories %}
+                      <th>
+                        {{c.name}}
+                      </th>
+                    {%endfor%}
+                  </tr>
                 </thead>
                 <tbody>
-                  {% for v in votes %}
+                  {% comment %} {% for v in votes %}
                   <tr school={{v.table.school.pk}} table={{v.table.pk}} category={{v.category.pk}}>
                     <td>
                       {{v.electoral_list.party}}
@@ -86,7 +93,19 @@
                       <input type="number" class="form-control bright" value={{v.quantity}} onchange="update_vote({{v.pk}}, this)">
                     </td>
                   </tr>
-                  {%endfor%}
+                  {%endfor%} {% endcomment %}
+                  {% regroup votes|dictsort:"electoral_list.name"|dictsort:"electoral_list.party.name" by electoral_list as category_votes %}
+                  {% for cv in category_votes %}    
+                    <tr>
+                      <td>{{ cv.grouper.party.name }}</td>
+                      <td>{{ cv.grouper }}</td>
+                      {% for item in cv.list %}
+                        <td school={{item.table.school.pk}} table={{item.table.pk}} data>
+                          <input type="number" class="form-control bright" value={{item.quantity}} onchange="update_vote({{item.pk}}, this)">
+                        </td>
+                      {% endfor %}
+                    </tr>
+                  {% endfor %}
                 </tbody>
               </table>
             </div>                      
@@ -101,48 +120,26 @@
 
 <script>
     $(document).ready( function () {
-      $('#myTable').DataTable({
-        language: {
-          "decimal": "",
-          "emptyTable": "No hay información",
-          "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-          "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
-          "infoFiltered": "(Filtrado de _MAX_ total entradas)",
-          "infoPostFix": "",
-          "thousands": ",",
-          "lengthMenu": "Mostrar _MENU_ Entradas",
-          "loadingRecords": "Cargando...",
-          "processing": "Procesando...",
-          "search": "Buscar:",
-          "zeroRecords": "Sin resultados encontrados",
-          "paginate": {
-              "first": "Primero",
-              "last": "Ultimo",
-              "next": "Siguiente",
-              "previous": "Anterior"
-          }
-        },
-        responsive: true,
-        paging: false,
-        searching: false,
-        info: false        
-      });
 
-      $("input:text").focus(function() { $(this).select(); } );
+      $("input").focus(function() { $(this).select(); } );
 
-      $('.js-select2').select2();
-
-      $('#school-select').on('select2:select', filter);
-      $('#table-select').on('select2:select', filter);
-      $('#category-select').on('select2:select', filter);
+      //$('.js-select2').select2();
+      //$('#school-select').on('select2:select', filter);
+      //$('#table-select').on('select2:select', filter);
+      $('#school-select').on('change', filter);
+      $('#table-select').on('change', filter);
 
       function filter(){
         var school = $('#school-select').val();
-        var table = $('#table-select').val();
-        var category = $('#category-select').val();
 
-        $('tr').hide();
-        $('tr[school="'+school+'"][table="'+table+'"][category="'+category+'"]').show();
+        $('#table-select option').hide();
+        $('#table-select option[school="'+school+'"]').show();        
+        $('#table-select').val( $('#table-select option[school="'+school+'"]').first().val() );
+
+        var table = $('#table-select').val();
+
+        $('tbody td[data]').hide();
+        $('td[school="'+school+'"][table="'+table+'"]').show();
       }
 
       function update_all() {
