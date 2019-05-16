@@ -126,17 +126,21 @@
       //$('.js-select2').select2();
       //$('#school-select').on('select2:select', filter);
       //$('#table-select').on('select2:select', filter);
-      $('#school-select').on('change', filter);
-      $('#table-select').on('change', filter);
+      $('#school-select').on('change', filter_school);
+      $('#table-select').on('change', filter_table);
 
-      function filter(){
-        var school = $('#school-select').val();
+      function filter_school () {
+        school = $('#school-select').val();
 
         $('#table-select option').hide();
         $('#table-select option[school="'+school+'"]').show();        
-        $('#table-select').val( $('#table-select option[school="'+school+'"]').first().val() );
+        $('#table-select').val( $('#table-select option[school="'+school+'"]').first().val() );      
+        filter_table();  
+      }
 
-        var table = $('#table-select').val();
+      function filter_table () {
+        school = $('#school-select').val();
+        table = $('#table-select').val();
 
         $('tbody td[data]').hide();
         $('td[school="'+school+'"][table="'+table+'"]').show();
@@ -151,7 +155,7 @@
       }
 
       $('#save-btn').on('click', update_all);
-      filter();    
+      filter_school();    
     });
     
     var token = '{{csrf_token}}';
