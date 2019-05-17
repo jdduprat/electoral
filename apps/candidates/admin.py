@@ -34,7 +34,7 @@ create_votes.short_description = "Crear Registros para Conteo de Votos"
 class ElectionAdmin(admin.ModelAdmin):
     list_display = ['description', 'date', 'current']
     list_filter = ['date', 'current']
-    fields= ['description', 'date', 'current', 'categories']
+    fields= ['description', 'date', 'current', 'categories', 'parties']
     actions = [create_votes,]
 
 
@@ -44,15 +44,35 @@ class PartyAdmin(admin.ModelAdmin):
 
 
 class ElectoralListAdmin(admin.ModelAdmin):
-    list_display = ['name', 'party']
+    list_display = ['name', 'party', 'current']
     list_filter = ['party']
-    fields = ['name', 'party']
+    fields = ['name', 'party', 'current']
+    actions = ['check', 'uncheck']
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name', 'is_listless']
     list_filter = ['election__categories']
-    fields= ['name']
+    fields= ['name', 'is_listless']
+
+
+def check(self, request, queryset):
+        rows_updated = queryset.update(check=True)
+        if rows_updated == 1:
+            message_bit = "1 lista fue"
+        else:
+            message_bit = "%s listas fueron" % rows_updated
+        self.message_user(request, "%s marcada/s como vigente/s" % message_bit)
+check.short_description = "Marcar como Vigente"
+
+def uncheck(self, request, queryset):
+        rows_updated = queryset.update(check=False)
+        if rows_updated == 1:
+            message_bit = "1 lista fue"
+        else:
+            message_bit = "%s listas fueron" % rows_updated
+        self.message_user(request, "%s marcada/s como NO vigente/s" % message_bit)
+uncheck.short_description = "Quitar Vigencia"
 
 
 admin.site.register(Election, ElectionAdmin)

@@ -12,7 +12,7 @@ def to_assign(self, request, queryset):
         message_bit = u"1 escuela fué"
     else:
         message_bit = "%s escuelas fueron" % rows_updated
-    self.message_user(request, "%s asignada/s a " % message_bit + str(request.user))
+    self.message_user(request, "%s asignada/s a " % message_bit + str(user))
 
 to_assign.short_description = 'Asignar usuario a escuela/s seleccionada/s'
 

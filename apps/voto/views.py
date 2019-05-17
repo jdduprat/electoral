@@ -10,10 +10,10 @@ from django.db import DatabaseError
 def votesList(request):
     # votes = Votos.objects.filter(table__school_assigned_to = request.user)
     context = {}
-    context['schools'] = School.objects.filter(assigned_to = request.user)
-    context['tables'] = Table.objects.filter(school__assigned_to = request.user)
+    context['schools'] = School.objects.filter(assigned_to=request.user)
+    context['tables'] = Table.objects.filter(school__assigned_to=request.user)
     context['categories'] = Category.objects.filter(election__current=True)
-    context['votes'] = Voto.objects.filter(table__school__assigned_to = request.user, election__current=True)
+    context['votes'] = Voto.objects.filter(table__school__assigned_to=request.user, election__current=True)
     
     return render(request, 'votes_charge.html', context)
 
