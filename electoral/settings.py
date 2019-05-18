@@ -131,8 +131,37 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS =  (os.path.join(os.path.dirname(BASE_DIR), "static"), '/Desarrollos/web/electoral/static/')
-#STATIC_ROOT = 'static' #os.path.join(BASE_DIR, 'static')
-# STATICFILES_DIRS = (
-#     '/root/project/static/',
-#     'd:/desarrollos/web/electoral/electoral/static/',
-# )
+
+#JET_SIDE_MENU_COMPACT = True
+
+JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
+    # {'label': _('General'), 'app_label': 'core', 'items': [
+    #     {'name': 'help.question'},
+    #     {'name': 'pages.page', 'label': _('Static page')},
+    #     {'name': 'city'},
+    #     {'name': 'validationcode'},
+    #     {'label': _('Analytics'), 'url': 'http://example.com', 'url_blank': True},
+    # ]},
+    {'label': 'Usuarios', 'items': [
+        {'name': 'auth.user'},
+        {'name': 'auth.group'},
+    ]},
+    {'label': 'Entorno', 'items': [
+        {'name': 'candidates.category'},
+        {'name': 'candidates.party'},
+        {'name': 'candidates.electorallist'},
+        {'name': 'candidates.election'},
+    ]},
+    {'label': 'Ciudades', 'items': [
+        {'name': 'cities.city'},
+        {'name': 'cities.province'},
+    ]},
+    {'label': 'Escuelas', 'items': [
+        {'name': 'places.school'},
+        {'name': 'places.table'},
+    ]},
+    {'label': 'Reportes', 'items': [
+        {'name': 'voto.voto'},
+        {'name': 'voto.votosummary'},
+    ]},
+]

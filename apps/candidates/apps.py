@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class CandidatesConfig(AppConfig):
     name = 'apps.candidates'
-    verbose_name = 'Candidatos'
+    verbose_name = 'Entorno'

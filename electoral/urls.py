@@ -29,3 +29,7 @@ urlpatterns = [
     re_path(r'^carga/$', view=votesList, name='carga'),
     re_path(r'^update_vote/$', view=updateVote, name='update_vote'),
 ]
+
+admin.site.site_header = "Sistema de Registración de Elecciones"
+admin.site.site_title = "Sistema de Registración de Elecciones"
+admin.site.index_title = "Sistema de Registración de Elecciones"
