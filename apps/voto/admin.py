@@ -4,6 +4,7 @@ from django.db.models import Count, Sum, Min, Max, DateField
 from django.db.models.functions import Trunc
 
 
+@admin.register(Voto)
 class VotoAdmin(admin.ModelAdmin):
     list_display = ['get_school', 'election', 'table', 'category', 'electoral_list', 'quantity']
     list_filter = ['election', 'category']
@@ -26,8 +27,6 @@ class VotoAdmin(admin.ModelAdmin):
         # if not getattr(obj, 'created_by', None):            
             obj.created_by = request.user
         obj.save()
-
-admin.site.register(Voto, VotoAdmin)
 
 
 def get_next_in_date_hierarchy(request, date_hierarchy):
@@ -86,7 +85,7 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
 
         # List view
         metrics = {
-            'total': Count('quantity'),
+            'total': Sum('table__elctors_qty'),
             'total_votes': Sum('quantity'),
         }
 

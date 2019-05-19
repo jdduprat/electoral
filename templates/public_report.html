@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block content %}
+<div class="content-i col-sm-6" style="margin: 0 auto;">
+  <div class="content-box">
+    <div class="col-sm-12">
+        <div class='element-wrapper'>
+          <h6 class="element-header">Resultados Parciales</h6> 
+          <div class="row pt-4">
+            <div class="col-sm-8">
+              <div class='element-box'>
+                  <h6 class="element-header">Por Partidos</h6>
+                  <div class='el-chart-w'>
+                    <canvas id="myChart" height="255" width="255"></canvas>  
+                  </div> 
+                  <h6 class="element-header">Por Listas</h6>
+                  <div class='el-chart-w'>
+                    <canvas id="donutChart1" height="255" width="255"></canvas>   
+                  </div> 
+              </div>                  
+            </div>
+            <div class="col-sm-4">
+              <div class="element-box-tp">                  
+                <div class="col-sm-12">
+                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <i class="os-icon icon-people"></i>
+                    <div class="label">Electores Inscriptos</div>
+                    <div class="value">{{totals.table__elctors_qty__sum|intcomma}}</div>
+                  </a>
+                </div>                   
+                <div class="col-sm-12">
+                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <i class="batch-icon-browser-new-window"></i>
+                    <div class="label">Votos Positivos</div>
+                    <div class="value">{{totals.quantity__sum|intcomma}}</div>
+                  </a>
+                </div> 
+                {% for v in other_votes %}                        
+                  <div class="col-sm-12">
+                    <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                      <i class="os-icon os-icon-arrow-up6"></i>
+                      <div class="label">{{v.electoral_list__name}}</div>
+                      <div class="value">{{v.quantity__sum|intcomma}}</div>
+                    </a>
+                  </div> 
+                {% endfor %}                     
+              </div>
+            </div>
+          </div> <!--end row-->
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block extra_js%}
+
+<script>
+    var votes_per_party_labels = [];   
+    var votes_per_party_data = [];   
+    var votes_per_elist_labels = [];   
+    var votes_per_elist_data = [];    
+    var other_votes = [];   
+    var totals_electors = '{{totals.table__elctors_qty__sum}}';     
+    var totals_votes = '{{totals.quantity__sum}}'; 
+    var colors_elist = []; 
+    var colors_border_elist = [];           
+    var colors_party = [];
+    var colors_border_party = [];
+
+    var dynamicColors = function() {
+      var r = Math.floor(Math.random() * 255);
+      var g = Math.floor(Math.random() * 255);
+      var b = Math.floor(Math.random() * 255);
+      return r + "," + g + "," + b;
+    };
+
+    {% for v in votes_per_party %}                        
+        votes_per_party_labels.push('{{v.electoral_list__party__name}}');
+        votes_per_party_data.push('{{v.quantity__sum}}');
+        var color = dynamicColors();
+        colors_party.push("rgba(" + color + ", 0.2)");
+        colors_border_party.push("rgba(" + color + ", 1)");
+    {% endfor %}                    
+    {% for v in votes_per_elist %}                        
+        votes_per_elist_labels.push('{{v.electoral_list__name}}')
+        votes_per_elist_data.push('{{v.quantity__sum}}');
+        color = dynamicColors();
+        colors_elist.push("rgba(" + color + ", 0.4)");
+        colors_border_elist.push("rgba(" + color + ", 1)");
+    {% endfor %}                   
+    {% for v in other_votes %}                        
+        other_votes.push('name':'{{v.electoral_list__name}}', 'qty':'{{v.quantity__sum}}');
+    {% endfor %}                    
+
+    var ctx = document.getElementById('myChart');
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: votes_per_party_labels,
+            datasets: [{
+                data: votes_per_party_data,
+                backgroundColor: colors_party,
+                hoverBackgroundColor: colors_border_party,
+                borderColor: colors_border_party,
+                borderWidth: 1,
+                hoverBorderColor: 'transparent'
+            }]
+        },
+        options: {
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+                fontColor: '#333',
+            }
+          }
+        }
+    });     
+    
+    if ($("#donutChart1").length) {
+      var donutChart1 = $("#donutChart1");
+
+      // donut chart data
+      var data1 = {
+        labels: votes_per_elist_labels,
+        datasets: [{
+                    data: votes_per_elist_data,
+                    backgroundColor: colors_elist,
+                    hoverBackgroundColor: colors_border_elist,
+                    borderWidth: 6,
+                    hoverBorderColor: 'transparent'
+                  }]
+      };
+
+      // -----------------
+      // init donut chart
+      // -----------------
+      new Chart(donutChart1, {
+        type: 'doughnut',
+        data: data1,
+        options: {
+          legend: {
+            display: true,
+            position: 'bottom'
+          },
+          animation: {
+            animateScale: true
+          },
+          cutoutPercentage: 80
+        }
+      });
+    }
+  
+</script>
+
+{% endblock extra_js%}
