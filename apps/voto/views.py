@@ -43,6 +43,7 @@ def votesChart(request):
     context['votes_per_party'] = votes.exclude(electoral_list__party__isnull=True).values('electoral_list__party__name').annotate(Sum('quantity'))
     context['votes_per_elist'] = votes.exclude(electoral_list__party__isnull=True).values('electoral_list__name', 'electoral_list__party').annotate(Sum('quantity'))
     context['other_votes'] = Voto.objects.filter(election__current=True, electoral_list__party__isnull=True).values('electoral_list__name', 'electoral_list__party').annotate(Sum('quantity'))
-    context['totals'] = votes.aggregate(Sum('table__elctors_qty'), Sum('quantity'))
+    context['totals_votes'] = votes.aggregate(Sum('quantity'))
+    context['totals_electors'] = Table.objects.all().aggregate(Sum('elctors_qty'))
 
     return render(request, 'public_report.html', context)

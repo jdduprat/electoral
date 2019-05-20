@@ -25,22 +25,19 @@
               <div class="element-box-tp">                  
                 <div class="col-sm-12">
                   <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
-                    <i class="os-icon icon-people"></i>
                     <div class="label">Electores Inscriptos</div>
-                    <div class="value">{{totals.table__elctors_qty__sum|intcomma}}</div>
+                    <div class="value">{{totals_electors.elctors_qty__sum|intcomma}}</div>
                   </a>
                 </div>                   
                 <div class="col-sm-12">
                   <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
-                    <i class="batch-icon-browser-new-window"></i>
                     <div class="label">Votos Positivos</div>
-                    <div class="value">{{totals.quantity__sum|intcomma}}</div>
+                    <div class="value">{{totals_votes|intcomma}}</div>
                   </a>
                 </div> 
                 {% for v in other_votes %}                        
                   <div class="col-sm-12">
                     <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
-                      <i class="os-icon os-icon-arrow-up6"></i>
                       <div class="label">{{v.electoral_list__name}}</div>
                       <div class="value">{{v.quantity__sum|intcomma}}</div>
                     </a>
@@ -62,8 +59,8 @@
     var votes_per_elist_labels = [];   
     var votes_per_elist_data = [];    
     var other_votes = [];   
-    var totals_electors = '{{totals.table__elctors_qty__sum}}';     
-    var totals_votes = '{{totals.quantity__sum}}'; 
+    var totals_electors = '{{totals_electors.elctors_qty__sum}}';     
+    var totals_votes = '{{totals_votes.quantity__sum}}'; 
     var colors_elist = []; 
     var colors_border_elist = [];           
     var colors_party = [];
