@@ -94,8 +94,12 @@
                     </td>
                   </tr>
                   {%endfor%} {% endcomment %}
-                  {% regroup votes|dictsort:"electoral_list.name"|dictsort:"electoral_list.party.name" by electoral_list as category_votes %}
-                  {% for cv in category_votes %}    
+                  
+                  <script>
+                    console.log('{{votes}}');
+                  </script>  
+                  {% regroup votes by electoral_list as category_votes %}
+                  {% for cv in category_votes %} 
                     <tr>
                       <td>{{ cv.grouper.party.name }}</td>
                       <td>{{ cv.grouper }}</td>

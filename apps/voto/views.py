@@ -6,6 +6,7 @@ from apps.candidates.models import Category, Party, ElectoralList, Election
 from django.http import HttpResponse, Http404
 from django.db import DatabaseError
 
+
 @login_required
 def votesList(request):
     # votes = Votos.objects.filter(table__school_assigned_to = request.user)
@@ -13,9 +14,10 @@ def votesList(request):
     context['schools'] = School.objects.filter(assigned_to=request.user)
     context['tables'] = Table.objects.filter(school__assigned_to=request.user)
     context['categories'] = Category.objects.filter(election__current=True)
-    context['votes'] = Voto.objects.filter(table__school__assigned_to=request.user, election__current=True)
+    context['votes'] = Voto.objects.filter(table__school__assigned_to=request.user, election__current=True).order_by('electoral_list__party', 'electoral_list')
     
     return render(request, 'votes_charge.html', context)
+
 
 @login_required
 def updateVote(request):
@@ -42,7 +44,7 @@ def votesChart(request):
     context['election'] = Election.objects.filter(current=True).last()
     context['votes_per_party'] = votes.exclude(electoral_list__party__isnull=True).values('electoral_list__party__name').annotate(Sum('quantity'))
     context['votes_per_elist'] = votes.exclude(electoral_list__party__isnull=True).values('electoral_list__name', 'electoral_list__party').annotate(Sum('quantity'))
-    context['other_votes'] = Voto.objects.filter(election__current=True, electoral_list__party__isnull=True).values('electoral_list__name', 'electoral_list__party').annotate(Sum('quantity'))
+    context['other_votes'] = Voto.objects.filter(election__current=True, electoral_list__party__isnull=True).values('electoral_list__name').annotate(Sum('quantity'))
     context['totals_votes'] = votes.aggregate(Sum('quantity'))
     context['totals_electors'] = Table.objects.all().aggregate(Sum('elctors_qty'))
 
