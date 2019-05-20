@@ -59,8 +59,6 @@
     var votes_per_elist_labels = [];   
     var votes_per_elist_data = [];    
     var other_votes = [];   
-    var totals_electors = '{{totals_electors.elctors_qty__sum}}';     
-    var totals_votes = '{{totals_votes.quantity__sum}}'; 
     var colors_elist = []; 
     var colors_border_elist = [];           
     var colors_party = [];
@@ -81,15 +79,12 @@
         colors_border_party.push("rgba(" + color + ", 1)");
     {% endfor %}                    
     {% for v in votes_per_elist %}                        
-        votes_per_elist_labels.push('{{v.electoral_list__name}}')
+        votes_per_elist_labels.push('{{v.electoral_list__name}}');
         votes_per_elist_data.push('{{v.quantity__sum}}');
         color = dynamicColors();
         colors_elist.push("rgba(" + color + ", 0.4)");
         colors_border_elist.push("rgba(" + color + ", 1)");
-    {% endfor %}                   
-    {% for v in other_votes %}                        
-        other_votes.push('name':'{{v.electoral_list__name}}', 'qty':'{{v.quantity__sum}}');
-    {% endfor %}                    
+    {% endfor %}                       
 
     var ctx = document.getElementById('myChart');
     var myChart = new Chart(ctx, {
