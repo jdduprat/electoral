@@ -32,7 +32,7 @@
                 <div class="col-sm-12">
                   <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
                     <div class="label">Votos Positivos</div>
-                    <div class="value">{{totals_votes|intcomma}}</div>
+                    <div class="value">{{totals_votes.quantity__sum|intcomma}}</div>
                   </a>
                 </div> 
                 {% for v in other_votes %}                        
