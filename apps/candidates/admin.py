@@ -12,8 +12,8 @@ def create_votes(self, request, queryset):
             self.message_user(request, "La elección seleccionada no está Vigente o ya posee votos.")
         else:
             #Creo votos por mesa, lista y categoria de la eleccion
-            categories = Category.objects.filter(election = obj.id)
-            electoral_lists = ElectoralList.objects.all()
+            categories = Category.objects.filter(election=obj)
+            electoral_lists = ElectoralList.objects.filter(current=True, party__election=obj) | ElectoralList.objects.filter(current=True, party__isnull=True)
             tables = Table.objects.all()
 
             count = 0
