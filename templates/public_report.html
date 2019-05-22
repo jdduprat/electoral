@@ -10,16 +10,14 @@
           <h6 class="element-header">Resultados Parciales</h6> 
           <div class="row pt-4">
             <div class="col-sm-8">
+              {% for c in categories %} 
               <div class='element-box'>
-                  <h6 class="element-header">Por Partidos</h6>
+                  <h6 class="element-header">{{c.name}}</h6>
                   <div class='el-chart-w'>
-                    <canvas id="myChart" height="255" width="255"></canvas>  
+                    <canvas id="myChart-{{c.pk}}" height="255" width="255"></canvas>  
                   </div> 
-                  <h6 class="element-header">Por Listas</h6>
-                  <div class='el-chart-w'>
-                    <canvas id="donutChart1" height="255" width="255"></canvas>   
-                  </div> 
-              </div>                  
+              </div> 
+              {% endfor %}        
             </div>
             <div class="col-sm-4">
               <div class="element-box-tp">                  
@@ -56,13 +54,12 @@
 <script>
     var votes_per_party_labels = [];   
     var votes_per_party_data = [];   
-    var votes_per_elist_labels = [];   
-    var votes_per_elist_data = [];    
     var other_votes = [];   
     var colors_elist = []; 
     var colors_border_elist = [];           
     var colors_party = [];
     var colors_border_party = [];
+    var c, color; 
 
     var dynamicColors = function() {
       var r = Math.floor(Math.random() * 255);
@@ -71,79 +68,86 @@
       return r + "," + g + "," + b;
     };
 
-    {% for v in votes_per_party %}                        
-        votes_per_party_labels.push('{{v.electoral_list__party__name}}');
-        votes_per_party_data.push('{{v.quantity__sum}}');
-        var color = dynamicColors();
-        colors_party.push("rgba(" + color + ", 0.2)");
-        colors_border_party.push("rgba(" + color + ", 1)");
-    {% endfor %}                    
-    {% for v in votes_per_elist %}                        
-        votes_per_elist_labels.push('{{v.electoral_list__name}}');
-        votes_per_elist_data.push('{{v.quantity__sum}}');
+    {% for v in votes_per_party %}  
+        c = parseInt('{{v.category__pk}}'); 
+        if (votes_per_party_labels[c] === undefined) {
+          votes_per_party_labels[c] = [];
+          votes_per_party_data[c] = [];
+          colors_party[c] = [];
+          colors_border_party[c] = [];
+        }    
+        votes_per_party_labels[c].push('{{v.electoral_list__party__name}}');
+        votes_per_party_data[c].push('{{v.quantity__sum}}');
         color = dynamicColors();
-        colors_elist.push("rgba(" + color + ", 0.4)");
-        colors_border_elist.push("rgba(" + color + ", 1)");
-    {% endfor %}                       
+        colors_party[c].push("rgba(" + color + ", 0.2)");
+        colors_border_party[c].push("rgba(" + color + ", 1)");
+    {% endfor %}                         
 
-    var ctx = document.getElementById('myChart');
-    var myChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: votes_per_party_labels,
-            datasets: [{
-                data: votes_per_party_data,
-                backgroundColor: colors_party,
-                hoverBackgroundColor: colors_border_party,
-                borderColor: colors_border_party,
-                borderWidth: 1,
-                hoverBorderColor: 'transparent'
-            }]
-        },
-        options: {
-          legend: {
-            display: true,
-            position: 'bottom',
-            labels: {
-                fontColor: '#333',
+    {% for c in categories %} 
+      c = parseInt('{{c.pk}}');
+      var ctx = document.getElementById('myChart-{{c.pk}}');
+      var myChart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+              labels: votes_per_party_labels[c],
+              datasets: [{
+                  data: votes_per_party_data[c],
+                  backgroundColor: colors_party[c],
+                  hoverBackgroundColor: colors_border_party[c],
+                  borderColor: colors_border_party[c],
+                  borderWidth: 1,
+                  hoverBorderColor: 'transparent'
+              }]
+          },
+          /*options: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                  fontColor: '#333',
+              }
             }
-          }
-        }
-    });     
-    
-    if ($("#donutChart1").length) {
-      var donutChart1 = $("#donutChart1");
+          }*/
+           options: {
+            legend: {
+              display: true,
+              position: 'bottom',
+            },
+            events: false,
+            animation: {
+                duration: 1200,
+                easing: "easeOutQuart",
+                onComplete: function () {
+                    var ctx = this.chart.ctx;
+                    ctx.font='14px LatoRegular, Helvetica,sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    this.data.datasets.forEach(function (dataset) {
+                        for (var i = 0; i < dataset.data.length; i++) {
+                            var m = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+                                t = dataset._meta[Object.keys(dataset._meta)[0]].total,
+                                mR = m.innerRadius + (m.outerRadius - m.innerRadius) / 2,
+                                sA = m.startAngle,
+                                eA = m.endAngle,
+                                mA = sA + (eA - sA)/2;
+                            var x = mR * Math.cos(mA);
+                            var y = mR * Math.sin(mA);
+                            ctx.fillStyle = '#333';
 
-      // donut chart data
-      var data1 = {
-        labels: votes_per_elist_labels,
-        datasets: [{
-                    data: votes_per_elist_data,
-                    backgroundColor: colors_elist,
-                    hoverBackgroundColor: colors_border_elist,
-                    borderWidth: 3,
-                    hoverBorderColor: 'transparent'
-                  }]
-      };
-
-      // -----------------
-      // init donut chart
-      // -----------------
-      new Chart(donutChart1, {
-        type: 'doughnut',
-        data: data1,
-        options: {
-          legend: {
-            display: true,
-            position: 'bottom'
-          },
-          animation: {
-            animateScale: true
-          },
-          cutoutPercentage: 80
+                            var p = String(Math.round(dataset.data[i]/t*100)) + "%";
+                            if(dataset.data[i] > 0) {
+                                //ctx.fillText(m.label, m.x + x, m.y + y-25);
+                                ctx.fillText(dataset.data[i], m.x + x, m.y + y-10);
+                                ctx.fillText(p, m.x + x, m.y + y + 8);
+                            }
+                        }
+                    });
+                }
+            }
         }
-      });
-    }
+      });  
+    {% endfor %}
+       
   
 </script>
 
