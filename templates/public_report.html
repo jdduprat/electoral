@@ -83,6 +83,21 @@
         colors_border_party[c].push("rgba(" + color + ", 1)");
     {% endfor %}                         
 
+    {% for v in other_votes_bycat %}  
+        c = parseInt('{{v.category__pk}}'); 
+        if (votes_per_party_labels[c] === undefined) {
+          votes_per_party_labels[c] = [];
+          votes_per_party_data[c] = [];
+          colors_party[c] = [];
+          colors_border_party[c] = [];
+        }    
+        votes_per_party_labels[c].push('{{v.electoral_list__name}}');
+        votes_per_party_data[c].push('{{v.quantity__sum}}');
+        color = dynamicColors();
+        colors_party[c].push("rgba(" + color + ", 0.2)");
+        colors_border_party[c].push("rgba(" + color + ", 1)");
+    {% endfor %} 
+
     {% for c in categories %} 
       c = parseInt('{{c.pk}}');
       var ctx = document.getElementById('myChart-{{c.pk}}');
@@ -99,16 +114,32 @@
                   hoverBorderColor: 'transparent'
               }]
           },
-          /*options: {
+          options: {
             legend: {
               display: true,
               position: 'bottom',
               labels: {
                   fontColor: '#333',
               }
+            },
+            tooltips: {
+              enabled: true,
+              callbacks: {
+                label: function(tooltipItem, data) {
+                  var dataset = data.datasets[tooltipItem.datasetIndex];
+                  var label = data.labels[tooltipItem.index] || '';
+                  if (label) {
+                      label += ': ';
+                  }
+                  var t = dataset._meta[Object.keys(dataset._meta)[0]].total;
+                  var p = String(Math.round(dataset.data[tooltipItem.index]/t*100)) + "%"; 
+
+                  return label + p;
+                }
+              }
             }
-          }*/
-           options: {
+          }
+          /* options: {
             legend: {
               display: true,
               position: 'bottom',
@@ -144,7 +175,7 @@
                     });
                 }
             }
-        }
+          }*/
       });  
     {% endfor %}
        
