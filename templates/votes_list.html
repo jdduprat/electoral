@@ -64,7 +64,7 @@
         <tbody>
             {% for row in summary %}
             <tr class="{% cycle 'row1' 'row2' %}">
-                <td> {{ row.electoral_list__party__name }} </td>
+                <td> {% if profile.user.first_name == None %} '' {% else %} {{ row.electoral_list__party__name }} {% endif %} </td>
                 <td> {{ row.electoral_list__name }} </td>
                 <td> {{ row.category__name }} </td>
                 <td> {{ row.total_votes | default:0 }} </td>
