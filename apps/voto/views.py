@@ -49,5 +49,6 @@ def votesChart(request):
     context['other_votes_bycat'] = other_votes.values('category__pk', 'electoral_list__name').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__name')
     context['totals_votes'] = votes.aggregate(Sum('quantity'))
     context['totals_electors'] = Table.objects.all().aggregate(Sum('elctors_qty'))
+    context['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))
 
     return render(request, 'public_report.html', context)

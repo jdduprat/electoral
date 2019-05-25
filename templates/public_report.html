@@ -9,6 +9,7 @@
         <div class='element-wrapper'>
           <h6 class="element-header">Resultados Parciales</h6> 
           <div class="row pt-4">
+            <div class="water-mark"></div>
             <div class="col-sm-8">
               {% for c in categories %} 
               <div class='element-box'>
@@ -16,6 +17,11 @@
                   <div class='el-chart-w'>
                     <canvas id="myChart-{{c.pk}}" height="350" width="350"></canvas>  
                   </div> 
+                  <div class="el-legend condensed">
+                    <div class="row" id="legend-{{c.pk}}">
+                      
+                    </div>
+                  </div>
               </div> 
               {% endfor %}        
             </div>
@@ -59,6 +65,7 @@
     var colors_border_elist = [];           
     var colors_party = [];
     var colors_border_party = [];
+    var qty_bycat = []
     var c, color; 
 
     var dynamicColors = function() {
@@ -67,6 +74,16 @@
       var b = Math.floor(Math.random() * 255);
       return r + "," + g + "," + b;
     };
+    
+    var putLegend = function(c, color, legend, perc) { 
+      $('#legend-' + c).append('<div class="col-auto col-xxxxl-6 ml-sm-auto mr-sm-auto col-6"><div class="legend-value-w">' + 
+          '<div class="legend-pin legend-pin-squared" style="background-color: ' + color + ';"></div>' + 
+          '<div class="legend-value"><span>' + legend + '</span><div class="legend-sub-value">' + perc + '</div></div></div></div>');
+    }
+
+    {% for v in qty_bycat %}  
+      qty_bycat['{{v.category__pk}}'] = '{{v.quantity__sum}}'
+    {% endfor %}
 
     {% for v in votes_per_party %}  
         c = parseInt('{{v.category__pk}}'); 
@@ -81,6 +98,10 @@
         color = dynamicColors();
         colors_party[c].push("rgba(" + color + ", 0.2)");
         colors_border_party[c].push("rgba(" + color + ", 1)");
+
+        var per = '{{v.quantity__sum}}' + " - " + (parseInt('{{v.quantity__sum}}') / qty_bycat[c] * 100 ).toFixed(0) + "%"; 
+        putLegend(c, "rgba(" + color + ", 1)", '{{v.electoral_list__party__name}}', per);
+        
     {% endfor %}                         
 
     {% for v in other_votes_bycat %}  
@@ -96,6 +117,9 @@
         color = dynamicColors();
         colors_party[c].push("rgba(" + color + ", 0.2)");
         colors_border_party[c].push("rgba(" + color + ", 1)");
+
+        var p = '{{v.quantity__sum}}' + " - " + (parseInt('{{v.quantity__sum}}') / qty_bycat[c] * 100).toFixed(0) + "%"; 
+        putLegend(c, "rgba(" + color + ", 1)", '{{v.electoral_list__name}}', p);
     {% endfor %} 
 
     {% for c in categories %} 
@@ -116,7 +140,7 @@
           },
           options: {
             legend: {
-              display: true,
+              display: false,
               position: 'bottom',
               labels: {
                   fontColor: '#333',
