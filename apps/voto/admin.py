@@ -91,32 +91,10 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
             qs
             .values('electoral_list__party__name', 'category__name', 'electoral_list__name')
             .annotate(**metrics)
-            .order_by('electoral_list__party__name', 'category__name', '-total_votes')
+            .order_by('-total_votes')
         )
 
         # List view summary
         response.context_data['summary_total'] = dict(qs.aggregate(**metrics))
-
-         # Chart        
-        #period = get_next_in_date_hierarchy(request, self.date_hierarchy)
-        #response.context_data['period'] = period
-        summary_over_time = qs.annotate(
-            period=Trunc('created_date', 'day', output_field=DateField()),
-        ).values('period').annotate(total=Sum('quantity')).order_by('period')
-
-        summary_range = summary_over_time.aggregate(
-            low=Min('total'),
-            high=Max('total'),
-        )
-        high = summary_range.get('high', 0)
-        low = summary_range.get('low', 0)
-
-        response.context_data['summary_over_time'] = [{
-            'period': x['period'],
-            'total': x['total'] or 0,
-            'pct': \
-               ((x['total'] or 0) - low) / (high - low) * 100
-               if high > low else 0,
-        } for x in summary_over_time]        
         
         return response

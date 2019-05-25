@@ -9,15 +9,46 @@
     <h1> {% trans 'Reporte de Votos' %} </h1>
 {% endblock %}
 
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
+    <script>
+        var dynamicColors = function() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgba(" + r + "," + g + "," + b + ", 0.35)";
+        };
+        var options = {
+            responsive: true,
+            maintainAspectRatio: true,
+            legend: {
+                display: false
+            },
+            title: {
+                display: true
+            }
+        };
+        window.onload = function () {
+            var ctx = document.getElementById("graph");
+            //{% regroup cl.queryset|dictsort:"gender" by get_gender_display as gender_list %}
+            var lineChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: [{% for s in summary %}'{{ s.electoral_list__name }}',{% endfor %}],
+                    datasets: [{
+                        data: [{% for s in summary %}'{{ s.total_votes }}',{% endfor %}],
+                        backgroundColor: [{% for s in summary %} dynamicColors(), {% endfor %}]
+                    }]
+                },
+                options: options
+            });
+        }
+    </script>
+{% endblock %}
 
 {% block result_list %}
-
-<script type="text/javascript">
-    var asd = "{{ summary }}";
-    var other = "{{ cl.queryset }}";
-    console.log(asd);
-    console.log(other);
-</script>
 
 <div class="results">
     <table>
@@ -51,76 +82,14 @@
     </table>
 </div>
 
-<h2> {% blocktrans %} Gráfico ( {{ period}}) {% endblocktrans %} </h2>
-
-<style>
-.bar-chart {
-  height: 160px;
-  padding-top: 60px;
-  display: flex;
-  justify-content: space-around;
-  overflow: hidden;
-}
-.bar-chart .bar {
-    background-color: #79aec8;
-    flex: 100%;
-    align-self: flex-end;
-    margin-right: 2px;
-    position: relative;
-}
-.bar-chart .bar:last-child {
-    margin: 0;
-}
-.bar-chart .bar:hover {
-    background-color: #417690;
-}
-.bar-chart .bar .bar-tooltip {
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    position: relative;
-    z-index: 999;
-}
-.bar-chart .bar .bar-tooltip {
-    position: absolute;
-    top: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    font-weight: bold;
-    opacity: 0;
-}
-.bar-chart .bar:first-child .bar-tooltip {
-    transform: initial;
-    text-align: initial;
-    left: 0;
-}
-.bar-chart .bar:last-child .bar-tooltip {
-    transform: initial;
-    text-align: right;
-    right: 0;
-    left: initial;
-}
-.bar-chart .bar:hover .bar-tooltip {
-    opacity: 1;
-}
-</style>
-
-{% timezone 'UTC' %}
 <div class="results">
-    <div class="bar-chart">
-    {% for x in summary_over_time %}
-        <div class="bar" style="height:{{x.pct}}%">
-            <div class="bar-tooltip">
-                {{x.total }}<br>
-                {{x.period | date:"d/m/Y"}}
-            </div>
-        </div>
-    {% endfor %}
+    <div class="bar-chart" style="max-width: 100%;">
+        <canvas id="graph" height="250" width="250"></canvas> 
     </div>
 </div>
-{% endtimezone %}
+
 {% endblock %}
 
+
 {% block pagination %}{% endblock %}
+
