@@ -18,7 +18,7 @@
                     <canvas id="myChart-{{c.pk}}" height="350" width="350"></canvas>  
                   </div> 
                   <div class="el-legend condensed">
-                    <div class="row" id="legend-{{c.pk}}">
+                    <div id="legend-{{c.pk}}">
                       
                     </div>
                   </div>
@@ -76,7 +76,7 @@
     };
     
     var putLegend = function(c, color, legend, perc) { 
-      $('#legend-' + c).append('<div class="col-auto col-xxxxl-6 ml-sm-auto mr-sm-auto col-6"><div class="legend-value-w">' + 
+      $('#legend-' + c).append('<div class="col-auto col-xxxxl-6 col-6"><div class="legend-value-w">' + 
           '<div class="legend-pin legend-pin-squared" style="background-color: ' + color + ';"></div>' + 
           '<div class="legend-value"><span>' + legend + '</span><div class="legend-sub-value">' + perc + '</div></div></div></div>');
     }

@@ -23,11 +23,10 @@
     <table>
         <thead>
             <tr>
-                <th> <div class="text"> <a href="#">Partido </a> </div> </th>
-                <th> <div class="text"> <a href="#">Lista </a> </div> </th>
-                <th> <div class="text"> <a href="#">Categoría </a> </div> </th>
-                <th> <div class="text"> <a href="#">Cantidad de Votos </a> </div> </th>
-                <th> <div class="text"> <a href="#">Total de Votos </a> </div> </th>
+                <th> <div class="text"> <a href="#"><strong>Partido </strong></a> </div> </th>
+                <th> <div class="text"> <a href="#"><strong>Lista </strong></a> </div> </th>
+                <th> <div class="text"> <a href="#"><strong>Categoría </strong></a> </div> </th>
+                <th> <div class="text"> <a href="#"><strong>Total de Votos </strong></a> </div> </th>
                 <th> <div class="text"> <a href="#"><strong>% del Total </strong></a> </div> </th>
             </tr>
         </thead>
@@ -37,7 +36,6 @@
                 <td> {{ row.electoral_list__party__name }} </td>
                 <td> {{ row.electoral_list__name }} </td>
                 <td> {{ row.category__name }} </td>
-                <td> {{ row.total }} </td>
                 <td> {{ row.total_votes | default:0 }} </td>
                 <td><strong> {{ row.total_votes | default:0 | percentof:summary_total.total_votes }} </strong> </td>
             </tr>
@@ -46,7 +44,6 @@
                 <td>  </td>
                 <td>  </td>
                 <td> Total </td>
-                <td> {{ summary_total.total | intcomma }} </td>
                 <td> {{ summary_total.total_votes | default:0 }} </td>
                 <td> 100% </td>
             </tr>
