@@ -58,6 +58,10 @@
 {% block extra_js%}
 
 <script>
+    $(document).ready(function(){
+      setTimeout(function(){location.reload()}, 20000);
+    });
+
     var votes_per_party_labels = [];   
     var votes_per_party_data = [];   
     var other_votes = [];   
