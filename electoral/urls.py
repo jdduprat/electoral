@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
-from apps.voto.views import votesList, updateVote, votesChart
+from apps.voto.views import votesList, updateVote, votesChart, closeTable
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [    
@@ -28,9 +28,10 @@ urlpatterns = [
     
     re_path(r'^carga/$', view=votesList, name='carga'),
     re_path(r'^update_vote/$', view=updateVote, name='update_vote'),
+    re_path(r'^close_table/$', view=closeTable, name='close_table'),
     re_path(r'^$', view=votesChart, name='chart'),
 ]
 
-admin.site.site_header = "Sistema de Registración de Elecciones"
-admin.site.site_title = "Sistema de Registración de Elecciones"
-admin.site.index_title = "Sistema de Registración de Elecciones"
+admin.site.site_header = "Sistema de Registro de Elecciones"
+admin.site.site_title = "Sistema de Registro de Elecciones"
+admin.site.index_title = "Sistema de Registro de Elecciones"

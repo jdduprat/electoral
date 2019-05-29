@@ -19,7 +19,7 @@ class Voto(models.Model):
         
     class Meta:
         verbose_name = 'voto'
-        verbose_name_plural = 'votos'
+        verbose_name_plural = 'Listado de Votos'
         permissions = (
             ('can_read_assigned_schools', u'Solo puede leer escuelas que le están asignadas'),
         )
@@ -28,5 +28,5 @@ class Voto(models.Model):
 class VotoSummary(Voto):
     class Meta:
         proxy = True
-        verbose_name = 'Total de Votos'
-        verbose_name_plural = 'Totales de Votos'
+        verbose_name = 'Votos por Lista'
+        verbose_name_plural = 'Votos por Listas'

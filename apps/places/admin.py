@@ -22,11 +22,11 @@ class UpdateActionForm(ActionForm):
 
 
 class SchoolAdmin(admin.ModelAdmin):    
-    list_display = ['name', 'address', 'city', 'assigned_to']
-    list_filter = ['city__department__province', 'city', 'assigned_to']
+    list_display = ['name', 'address', 'city']
+    list_filter = ['city__department__province', 'city']
     fields= ['name', 'address', 'city', 'assigned_to']
-    actions = [to_assign, ]
-    action_form = UpdateActionForm
+    #actions = [to_assign, ]
+    #action_form = UpdateActionForm
 
 #    def get_queryset(self, request):
 #        qs = super(SchoolAdmin, self).get_queryset(request)
@@ -37,9 +37,10 @@ class SchoolAdmin(admin.ModelAdmin):
 #            return qs
 
 class TableAdmin(admin.ModelAdmin): 
-    list_display = ['name', 'school', 'elctors_qty']
-    list_filter = ['school', 'school__city']
-    fields= ['name', 'school', 'elctors_qty']
+    pass
+    #list_display = ['name', 'school', 'elctors_qty', 'closed_by']
+    #list_filter = ['school', 'school__city', 'closed_by']
+    #fields= ['name', 'school', 'elctors_qty', 'closed', 'closed_by', 'reopen_by']
     
 
 admin.site.register(School, SchoolAdmin)

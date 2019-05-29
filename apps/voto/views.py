@@ -33,6 +33,35 @@ def updateVote(request):
     else:
         raise Http404 
 
+
+def closeTable(request):
+    if request.is_ajax():
+        id = request.POST.get('pk', None)
+        
+        table = Table.objects.get(pk=id)
+        table.closed = True
+        table.closed_by = request.user
+        table.save()
+                    
+        return HttpResponse('success')
+    else:
+        raise Http404 
+
+
+def openTable(request):
+    if request.is_ajax():
+        id = request.POST.get('pk', None)
+        
+        table = Table.objects.get(pk=id)
+        table.closed = False
+        table.reopen_by = request.user
+        table.save()
+                    
+        return HttpResponse('success')
+    else:
+        raise Http404 
+
+
 from django.db.models import Count, Sum
 
 
@@ -48,6 +77,8 @@ def votesChart(request):
     context['other_votes'] = other_votes.values('electoral_list__name').annotate(Sum('quantity'))
     context['other_votes_bycat'] = other_votes.values('category__pk', 'electoral_list__name').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__name')
     context['totals_votes'] = votes.aggregate(Sum('quantity'))
+    context['totals_positives'] = votes.exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
+    context['totals_tables'] = Table.objects.filter(closed=True).count()
     context['totals_electors'] = Table.objects.all().aggregate(Sum('elctors_qty'))
     context['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))
 

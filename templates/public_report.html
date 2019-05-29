@@ -5,6 +5,10 @@
 {% block content %}
 <div class="content-i col-sm-6" style="margin: 0 auto;">
   <div class="content-box">
+    <div style="padding-left: 50px; text-align: right; padding-right: 20px;">
+      <a href="/admin" style="color: #261D1D; text-decoration: underline; font-size: 14px; letter-spacing: 1px;">Gestión</a>
+      <a href="/carga" style="color: #261D1D; text-decoration: underline; font-size: 14px; margin-left: 20px; letter-spacing: 1px;">Carga</a>
+    </div>
     <div class="col-sm-12">
         <div class='element-wrapper'>
           <h6 class="element-header">Resultados Parciales</h6> 
@@ -32,13 +36,25 @@
                     <div class="label">Electores Inscriptos</div>
                     <div class="value">{{totals_electors.elctors_qty__sum|intcomma}}</div>
                   </a>
-                </div>                   
+                </div>      
+                <div class="col-sm-12">
+                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <div class="label">Mesas Escrutadas</div>
+                    <div class="value">{{totals_tables}}</div>
+                  </a>
+                </div>                     
+                <div class="col-sm-12">
+                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <div class="label">Votos Emitidos</div>
+                    <div class="value">{{totals_votes.quantity__sum|intcomma}}</div>
+                  </a>
+                </div>                
                 <div class="col-sm-12">
                   <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
                     <div class="label">Votos Positivos</div>
-                    <div class="value">{{totals_votes.quantity__sum|intcomma}}</div>
+                    <div class="value">{{totals_positives.quantity__sum|intcomma}}</div>
                   </a>
-                </div> 
+                </div>      
                 {% for v in other_votes %}                        
                   <div class="col-sm-12">
                     <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
@@ -142,7 +158,7 @@
                   hoverBorderColor: 'transparent'
               }]
           },
-          options: {
+          /*options: {
             legend: {
               display: false,
               position: 'bottom',
@@ -166,11 +182,10 @@
                 }
               }
             }
-          }
-          /* options: {
+          }*/
+          options: {
             legend: {
-              display: true,
-              position: 'bottom',
+              display: false,
             },
             events: false,
             animation: {
@@ -178,7 +193,7 @@
                 easing: "easeOutQuart",
                 onComplete: function () {
                     var ctx = this.chart.ctx;
-                    ctx.font='14px LatoRegular, Helvetica,sans-serif';
+                    ctx.font='12px LatoRegular, Helvetica,sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'bottom';
                     this.data.datasets.forEach(function (dataset) {
@@ -196,14 +211,14 @@
                             var p = String(Math.round(dataset.data[i]/t*100)) + "%";
                             if(dataset.data[i] > 0) {
                                 //ctx.fillText(m.label, m.x + x, m.y + y-25);
-                                ctx.fillText(dataset.data[i], m.x + x, m.y + y-10);
+                                ctx.fillText(dataset.data[i], m.x + x, m.y + y-7);
                                 ctx.fillText(p, m.x + x, m.y + y + 8);
                             }
                         }
                     });
                 }
             }
-          }*/
+          }
       });  
     {% endfor %}
        

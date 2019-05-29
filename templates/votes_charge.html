@@ -32,7 +32,7 @@
                       <div class="col-sm-9">
                         <select class="form-control form-control-sm js-select2" id="table-select" style="width:100%">
                           {% for t in tables %}
-                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}">{{t.name}}</option>
+                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}" closed="{{t.closed}}">{{t.name}}</option>
                           {% endfor %}
                         </select>      
                       </div>
@@ -53,7 +53,7 @@
                   <div class="col-sm-2" style="text-align: right;">
                     <!--a class="btn btn-sm btn-secondary" href="#">Download CSV</a>
                     <a class="btn btn-sm btn-secondary" href="#">Print PDF</a -->
-                    <a class="btn btn-sm btn-primary" id="save-btn" href="#">Guardar</a>
+                    <a class="btn btn-sm btn-primary" id="save-btn" href="#">Cerrar Mesa</a>
                   </div>
                 </div>
               </form>
@@ -95,9 +95,9 @@
                   </tr>
                   {%endfor%} {% endcomment %}
                   
-                  <script>
+                  <!--script>
                     console.log('{{votes}}');
-                  </script>  
+                  </script-->  
                   {% regroup votes by electoral_list as category_votes %}
                   {% for cv in category_votes %} 
                     <tr>
@@ -145,12 +145,21 @@
       function filter_table () {
         school = $('#school-select').val();
         table = $('#table-select').val();
+        var sel = document.getElementById('table-select');
+        var selected = sel.options[sel.selectedIndex];
+        var c = selected.getAttribute('closed');
 
+        if ( c == 'True'){
+          $('#save-btn').val('Re Abrir Mesa');
+        } else {
+          $('#save-btn').val('Cerrar Mesa');
+        }
         $('tbody td[data]').hide();
         $('td[school="'+school+'"][table="'+table+'"]').show();
       }
 
       function update_all() {
+        close_table();
         $('.controls-above-table').alert();
         $('input[saved!=true]').each(function(){
           $(this).change();
@@ -173,6 +182,23 @@
             cache: false,
             success: function(data){
                 obj.setAttribute("saved", "");
+            },
+            fail: function (data) {
+                console.log("Error: " + data);
+            }                
+      });
+    }
+
+    function close_table() {
+      table_id = $('#table-select').val();
+      $.ajax({
+            type: 'POST',
+            headers: { "X-CSRFToken": token },
+            url : "/close_table/",
+            data:{ 'pk': table_id },
+            cache: false,
+            success: function(data){
+                //
             },
             fail: function (data) {
                 console.log("Error: " + data);
