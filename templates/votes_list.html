@@ -50,7 +50,7 @@
                 meta.data.forEach(function(bar, index) {
                     var data = dataset.data[index];
                     var t = '{{ summary_total.total_votes }}';
-                    ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', bar._model.x + 20, bar._model.y + 7);
+                    ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', bar._model.x + 50, bar._model.y + 7);
                     //ctx.fillText(String(Math.round(data / t * 100, 0)) + '%', bar._model.x + 20, bar._model.y + 12);
                 });
                 });
