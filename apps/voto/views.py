@@ -20,18 +20,6 @@ def votesList(request):
 
 
 @login_required
-def reportCharge(request):
-    context = {}
-    context['schools'] = School.objects.all()
-    context['tables'] = Table.objects.all()
-    context['categories'] = Category.objects.filter(election__current=True).order_by('pk')
-    context['users'] = Usuario.objects.all()
-    context['votes'] = Voto.objects.filter(election__current=True).order_by('electoral_list__party', 'electoral_list', 'category__pk')
-    
-    return render(request, 'report_charge.html', context)
-
-
-@login_required
 def updateVote(request):
     if request.is_ajax():
         id = request.POST.get('pk', None)

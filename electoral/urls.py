@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
-from apps.voto.views import votesList, updateVote, votesChart, closeTable, reportCharge
+from apps.voto.views import votesList, updateVote, votesChart, closeTable
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [    
@@ -26,7 +26,6 @@ urlpatterns = [
     re_path('login/', auth_views.LoginView.as_view(), {'template_name': "login.html"},name='login'),
     re_path('logout/', auth_views.logout_then_login, name='logout'),
     
-    re_path(r'^reporte_carga/$', view=reportCharge, name='reporte_carga'),
     re_path(r'^carga/$', view=votesList, name='carga'),
     re_path(r'^update_vote/$', view=updateVote, name='update_vote'),
     re_path(r'^close_table/$', view=closeTable, name='close_table'),
