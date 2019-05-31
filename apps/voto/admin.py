@@ -89,7 +89,7 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
 
         response.context_data['summary'] = list(
             qs
-            .values('electoral_list__party__name', 'electoral_list__party__color', 'category__name', 'electoral_list__name')
+            .values('electoral_list__party__name', 'electoral_list__party__color', 'category__name', 'electoral_list__name', 'electoral_list__head')
             .annotate(**metrics)
             .order_by('-total_votes')
         )
