@@ -63,7 +63,7 @@
             var lineChart = new Chart(ctx, {
                 type: 'horizontalBar',
                 data: {
-                    labels: [{% for s in summary %}'{{ s.electoral_list__name }} - {{ s.electoral_list__head }}',{% endfor %}],
+                    labels: [{% for s in summary %}'{{ s.electoral_list__name }}'.substr(0, 15) + ': ' + '{{ s.electoral_list__head }}',{% endfor %}],
                     datasets: [{
                         data: [{% for s in summary %}'{{ s.total_votes }}',{% endfor %}],
                         backgroundColor: [{% for s in summary %} 
