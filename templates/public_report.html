@@ -123,7 +123,7 @@
         putLegend(c, ('{{v.electoral_list__party__color}}'), '{{v.electoral_list__party__name}}', per);
         
     {% endfor %}                         
-
+    //#FFFFFF, #CDCDCD, #AEAEAE, #FF42D7
     {% for v in other_votes_bycat %}  
         c = parseInt('{{v.category__pk}}'); 
         if (votes_per_party_labels[c] === undefined) {

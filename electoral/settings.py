@@ -165,6 +165,7 @@ JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
     {'label': 'Reportes', 'items': [
         {'name': 'voto.voto'},
         {'name': 'voto.votosummary'},
+        {'name': 'voto.votocharge'},
         {'label': 'Control Carga Datos', 'url': '/reporte_carga', 'url_blank': True},
         {'label': 'Reportes Públicos', 'url': '/', 'url_blank': True},
     ]},

@@ -100,19 +100,46 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
         return response
 
 
-#@admin.register(VotoCharge)
+from apps.candidates.models import Category, Election
+from apps.places.models import Table
+
+@admin.register(VotoCharge)
 class LoadVotoChargeAdmin(admin.ModelAdmin):
-    change_list_template = 'votes_list.1.html'
+    change_list_template = 'control_charge.html'
     list_filter = (
         'election',
+        'table__school__assigned_to',
         'table__school',
-        ('table', RelatedFieldAjaxListFilter),
+        'table',
         'electoral_list__party',
-        'category',
         'electoral_list',
+        'category'
     )
 
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_module_permission(self, request):
+        return True
+
     def changelist_view(self, request, extra_context=None):
+        q = request.GET.copy()
+
+        if not 'election__id__exact' in q:             
+            q['election__id__exact'] = str(Election.objects.get(current=True).pk)
+
+        if not 'table__id__exact' in request.GET:    
+            q['table__id__exact'] = str(Table.objects.all().first().pk)
+
+        request.GET = q
+        request.META['QUERY_STRING'] = request.GET.urlencode()
+
         response = super().changelist_view(request, extra_context=extra_context)
 
         # self.get_queryset would return the base queryset. ChangeList
@@ -128,11 +155,9 @@ class LoadVotoChargeAdmin(admin.ModelAdmin):
             # no context_data.
             return response
 
-            
-        response.context_data['schools'] = School.objects.all()
-        response.context_data['tables'] = Table.objects.all()
+
         response.context_data['categories'] = Category.objects.filter(election__current=True).order_by('pk')
-        response.context_data['users'] = Usuario.objects.all()
-        response.context_data['votes'] = qs.filter(election__current=True).order_by('electoral_list__party', 'electoral_list', 'category__pk')
+        response.context_data['votes'] = list(qs.order_by('electoral_list__party', 'electoral_list', 'category__pk'))
+        response.context_data['summary'] = list(qs.values('category__name').annotate(Sum('quantity')).order_by('category__pk'))
 
         return response

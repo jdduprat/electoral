@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "stopOnEntry": false,
-            "pythonPath": "D:\\Desarrollos\\web\\busapp\\vbus\\Scripts\\python.exe",
+            "pythonPath": "D:\\Desarrollos\\web\\electoral\\venv\\Scripts\\python.exe",
             "program": "${workspaceFolder}\\manage.py",
             "args": [
                 "runserver",
