@@ -208,12 +208,13 @@
                             var y = mR * Math.sin(mA);
                             ctx.fillStyle = '#333';
 
-                            var p = String(Math.round(dataset.data[i]/t*100)) + "%";
-                            if(dataset.data[i] > 0) {
+                            var perc = Math.round(dataset.data[i]/t*100);
+
+                            if ( perc > 10 && dataset.data[i] > 0 ) {
+                               ctx.fillText(dataset.data[i], m.x + x, m.y + y-7);
+                               ctx.fillText(String(perc) + "%", m.x + x, m.y + y + 8);
+                            }             
                                 //ctx.fillText(m.label, m.x + x, m.y + y-25);
-                                ctx.fillText(dataset.data[i], m.x + x, m.y + y-7);
-                                ctx.fillText(p, m.x + x, m.y + y + 8);
-                            }
                         }
                     });
                 }

@@ -19,7 +19,7 @@ class School(models.Model):
 
 class Table(models.Model):
 
-    name = models.IntegerField(verbose_name=u'Número', blank=False, null=False)
+    name = models.CharField(verbose_name=u'Número', blank=False, null=False, max_length=20)
     school = models.ForeignKey(School, on_delete=models.DO_NOTHING, blank=False, null=False, verbose_name=u'Escuela')
     elctors_qty = models.IntegerField(verbose_name='N° Electores', blank=True, null=True)
     closed = models.BooleanField(verbose_name='Cerrada', blank=False, null=False, default=False)
