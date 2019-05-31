@@ -165,11 +165,9 @@
 
       function update_all() {
         close_table();
-        $('.controls-above-table').alert();
         $('input[saved!=true]').each(function(){
           $(this).change();
         });
-        $('.controls-above-table').alert('close');
       }
 
       $('#save-btn').on('click', update_all);
@@ -196,19 +194,25 @@
 
     function close_table() {
       table_id = $('#table-select').val();
-      $.ajax({
+      var mensaje;
+      var opcion = confirm("¿Finalizó la carga? ¿Desea cerrar la mesa seleccionada?");
+      if (opcion == true) {
+        $.ajax({
             type: 'POST',
             headers: { "X-CSRFToken": token },
             url : "/close_table/",
             data:{ 'pk': table_id },
             cache: false,
             success: function(data){
-                //
+                console.log("mesa cerrada " + table_id);
             },
             fail: function (data) {
                 console.log("Error: " + data);
             }                
-      });
+        });
+      } else {
+         //console.log("Cancela");
+      }      
     }
 </script>
 

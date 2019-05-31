@@ -6,7 +6,7 @@ from django.dispatch import receiver
 
 class Usuario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    dni = models.CharField(max_length=8, null=False, blank=False)
+    dni = models.CharField(max_length=10, null=False, blank=False)
     tel = models.CharField(max_length=20, null=False, blank=False)
 
     def __str__(self):
