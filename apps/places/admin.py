@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import School, Table
 from django.contrib.admin.helpers import ActionForm
 from django import forms
-from django.contrib.auth.models import User
+#from apps.users.models import Usuario
 
 
 def to_assign(self, request, queryset):
@@ -18,7 +18,8 @@ to_assign.short_description = 'Asignar usuario a escuela/s seleccionada/s'
 
 
 class UpdateActionForm(ActionForm):
-	user = forms.ModelChoiceField(queryset=User.objects.all())
+    pass
+	#user = forms.ModelChoiceField(queryset=Usuario.objects.all())
 
 
 class SchoolAdmin(admin.ModelAdmin):    

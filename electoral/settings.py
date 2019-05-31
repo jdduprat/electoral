@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 INSTALLED_APPS = [
     #JET
@@ -47,7 +46,8 @@ INSTALLED_APPS = [
     'apps.places',
     'apps.candidates',
     'apps.voto',
-    'apps.cities'
+    'apps.cities',
+    'apps.users'
 ]
 
 MIDDLEWARE = [
@@ -97,6 +97,7 @@ DATABASES = {
         'DEFAULT_CHARSET': 'utf-8',
     }
 }
+
 
 
 # Password validation

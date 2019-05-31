@@ -49,9 +49,10 @@ class ElectoralList(models.Model):
     add_to_best = models.BooleanField(verbose_name=u'Sumariza al Ganador', blank=False, null=False, default=False, 
                     help_text="Si está activado este campo, los votos de esta lista sumarizarán en los reportes" +
                              "al partido con mayor cantidad de Votos")
-
+    head = models.CharField(verbose_name=u'Cabecera', blank=False, null=False, max_length=80, default='')
+    
     def __str__(self):
-        return self.name
+        return self.name + ' - ' + self.head
     
     class Meta:
         verbose_name = 'lista'

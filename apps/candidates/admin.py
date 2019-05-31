@@ -63,9 +63,9 @@ class PartyAdmin(admin.ModelAdmin):
 
 
 class ElectoralListAdmin(admin.ModelAdmin):
-    list_display = ['name', 'party', 'current']
-    list_filter = ['party']
-    fields = ['name', 'party', 'current']
+    list_display = ['name', 'party', 'current', 'head']
+    list_filter = ['party', 'head']
+    fields = ['name', 'party', 'current', 'head']
     actions = [check, uncheck,]
 
 
