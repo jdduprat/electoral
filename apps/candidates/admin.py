@@ -58,8 +58,8 @@ uncheck.short_description = "Quitar Vigencia"
 
 
 class PartyAdmin(admin.ModelAdmin):
-    list_display = ['name', 'address']
-    fields= ['name', 'address']
+    list_display = ['name', 'address', 'color']
+    fields= ['name', 'address', 'color']
 
 
 class ElectoralListAdmin(admin.ModelAdmin):

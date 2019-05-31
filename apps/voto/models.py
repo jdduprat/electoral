@@ -30,3 +30,10 @@ class VotoSummary(Voto):
         proxy = True
         verbose_name = 'Votos por Lista'
         verbose_name_plural = 'Votos por Listas'
+
+
+class VotoCharge(Voto):
+    class Meta:
+        proxy = True
+        verbose_name = 'Control de Carga de Votos'
+        verbose_name_plural = 'Control de Carga de Votos'

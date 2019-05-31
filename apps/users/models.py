@@ -15,6 +15,8 @@ class Usuario(models.Model):
 
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Usuario.objects.create(user=instance)
-    #instance.usuario.save()
+    try:
+        Usuario.objects.get(user=instance)
+    except Usuario.DoesNotExist:        
+        pass
+        #Usuario.objects.create(user=instance)

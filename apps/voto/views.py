@@ -3,13 +3,13 @@ from django.contrib.auth.decorators import login_required
 from .models import Voto
 from apps.places.models import School, Table
 from apps.candidates.models import Category, Party, ElectoralList, Election
+from apps.users.models import Usuario
 from django.http import HttpResponse, Http404
 from django.db import DatabaseError
 
 
 @login_required
 def votesList(request):
-    # votes = Votos.objects.filter(table__school_assigned_to = request.user)
     context = {}
     context['schools'] = School.objects.filter(assigned_to=request.user)
     context['tables'] = Table.objects.filter(school__assigned_to=request.user)
@@ -17,6 +17,18 @@ def votesList(request):
     context['votes'] = Voto.objects.filter(table__school__assigned_to=request.user, election__current=True).order_by('electoral_list__party', 'electoral_list', 'category__pk')
     
     return render(request, 'votes_charge.html', context)
+
+
+@login_required
+def reportCharge(request):
+    context = {}
+    context['schools'] = School.objects.all()
+    context['tables'] = Table.objects.all()
+    context['categories'] = Category.objects.filter(election__current=True).order_by('pk')
+    context['users'] = Usuario.objects.all()
+    context['votes'] = Voto.objects.filter(election__current=True).order_by('electoral_list__party', 'electoral_list', 'category__pk')
+    
+    return render(request, 'report_charge.html', context)
 
 
 @login_required
@@ -73,7 +85,7 @@ def votesChart(request):
 
     context['election'] = Election.objects.filter(current=True).last()
     context['categories'] = Category.objects.filter(election__current=True)
-    context['votes_per_party'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__party__name').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__party__name')
+    context['votes_per_party'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__party__name', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__party__name')
     context['other_votes'] = other_votes.values('electoral_list__name').annotate(Sum('quantity'))
     context['other_votes_bycat'] = other_votes.values('category__pk', 'electoral_list__name').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__name')
     context['totals_votes'] = votes.aggregate(Sum('quantity'))

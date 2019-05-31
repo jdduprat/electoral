@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="content-i">
+  <div class="content-box">  
+    <div style="padding-left: 50px; text-align: right; padding-right: 20px;">
+      <a href="/admin" style="color: #261D1D; text-decoration: underline; font-size: 14px; letter-spacing: 1px;">Gestión</a>
+      <a href="/" style="color: #261D1D; text-decoration: underline; font-size: 14px; margin-left: 20px; letter-spacing: 1px;">Reportes</a>
+      <a href="{% url 'logout' %}" style="color: #261D1D; text-decoration: underline; font-size: 14px; margin-left: 20px; letter-spacing: 1px;"><i class="os-icon os-icon-signs-11"></i><span>Cerrar Sesión</span></a>
+    </div>
+    <div class="row pt-4">
+      <div class="col-sm-12">
+        <div class="element-wrapper">
+          <h6 class="element-header">
+            Control de Carga de Conteo de Votos
+          </h6>
+          <div class="element-box-tp">
+            <div class="controls-above-table">
+              <form class="form-horizontal">
+                <div class="row">
+                  <div class="col-sm">
+                    <div class="form-group row">
+                      <label for="user-select" class="control-label col-xs-3" style="margin-right: 5px;">Usuario: </label>
+                      <div class="col-sm-9">
+                        <select class="form-control form-control-sm js-select2" id="user-select" style="width:100%">
+                          {% for u in users %}
+                            <option value="{{u.pk}}" class="user-change">{{u}}</option>
+                          {% endfor %}
+                        </select>         
+                      </div>             
+                    </div>              
+                  </div> 
+                  <div class="col-sm">
+                    <div class="form-group row">
+                      <label for="school-select" class="control-label col-xs-3" style="margin-right: 5px;">Escuela: </label>
+                      <div class="col-sm-9">
+                        <select class="form-control form-control-sm js-select2" id="school-select" style="width:100%">
+                          {% for s in schools %}
+                            <option value="{{s.pk}}" class="school-change" user="{{s.assigned_to.pk}}">{{s.name}}</option>
+                          {% endfor %}
+                        </select>         
+                      </div>             
+                    </div>              
+                  </div> 
+                  <div class="col-sm">
+                    <div class="form-group row">
+                      <label for="table-select" class="control-label col-xs-3" style="margin-right: 5px;">Mesa: </label>
+                      <div class="col-sm-9">
+                        <select class="form-control form-control-sm js-select2" id="table-select" style="width:100%">
+                          {% for t in tables %}
+                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}" closed="{{t.closed}}">{{t.name}}</option>
+                          {% endfor %}
+                        </select>      
+                      </div>
+                    </div>    
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered table-v2 table-striped" id="myTable">
+                <thead>
+                  <tr>
+                    <th rowspan="2" data-valign="middle">
+                      Partido
+                    </th>
+                    <th rowspan="2" data-valign="middle">
+                      Lista
+                    </th>
+                    <th colspan="{{categories.count}}">
+                      Cantidad
+                    </th>
+                  </tr>
+                  <tr>
+                    {% for c in categories %}
+                      <th>
+                        {{c.name}}
+                      </th>
+                    {%endfor%}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% regroup votes by electoral_list as category_votes %}
+                  {% for cv in category_votes %} 
+                    <tr>
+                      <td>{{ cv.grouper.party.name }}</td>
+                      <td>{{ cv.grouper }}</td>
+                      {% for item in cv.list %}
+                        <td school={{item.table.school.pk}} table={{item.table.pk}} data>
+                          {{item.quantity}}
+                        </td>
+                      {% endfor %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>                      
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block extra_js%}
+
+<script>
+    $(document).ready( function () {
+
+      $("input").focus(function() { $(this).select(); } );
+
+      //$('.js-select2').select2();
+      //$('#school-select').on('select2:select', filter);
+      //$('#table-select').on('select2:select', filter);
+      $('#school-select').on('change', filter_school);
+      $('#table-select').on('change', filter_table);
+      $('#user-select').on('change', filter_user);
+
+      function filter_user () {
+        user = $('#user-select').val();
+
+        $('#school-select option').hide();
+        $('#school-select option[user="'+user+'"]').show();        
+        $('#school-select').val( $('#school-select option[user="'+user+'"]').first().val() );      
+        filter_school();  
+      }
+
+
+      function filter_school () {
+        school = $('#school-select').val();
+
+        $('#table-select option').hide();
+        $('#table-select option[school="'+school+'"]').show();        
+        $('#table-select').val( $('#table-select option[school="'+school+'"]').first().val() );      
+        filter_table();  
+      }
+
+      function filter_table () {
+        school = $('#school-select').val();
+        table = $('#table-select').val();
+        var sel = document.getElementById('table-select');
+        var selected = sel.options[sel.selectedIndex];
+        var c = selected.getAttribute('closed');
+        $('tbody td[data]').hide();
+        $('td[school="'+school+'"][table="'+table+'"]').show();
+      }
+
+      filter_user();    
+    });
+    
+</script>
+
+{% endblock extra_js%}

@@ -1,0 +1,52 @@
+{% extends "admin/change_list.html" %}
+
+{% block content_title %}
+    <h1> {% trans 'Reporte de Votos' %} </h1>
+{% endblock %}
+
+{% block result_list %}
+
+<div class="results">
+    <table>
+        <thead>
+            <tr>
+            <th rowspan="2" data-valign="middle">
+                Partido
+            </th>
+            <th rowspan="2" data-valign="middle">
+                Lista
+            </th>
+            <th colspan="{{categories.count}}">
+                Cantidad
+            </th>
+            </tr>
+            <tr>
+            {% for c in categories %}
+                <th>
+                {{c.name}}
+                </th>
+            {%endfor%}
+            </tr>
+        </thead>
+        <tbody>
+            {% regroup votes by electoral_list as category_votes %}
+            {% for cv in category_votes %} 
+            <tr>
+                <td>{{ cv.grouper.party.name }}</td>
+                <td>{{ cv.grouper }}</td>
+                {% for item in cv.list %}
+                <td school={{item.table.school.pk}} table={{item.table.pk}} data>
+                    <input type="number" class="form-control bright" value={{item.quantity}} onchange="update_vote({{item.pk}}, this)">
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+
+{% block pagination %}{% endblock %}
+

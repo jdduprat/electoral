@@ -1,4 +1,6 @@
 from django.db import models
+from colorfield.fields import ColorField
+
 
 class Category(models.Model):
 
@@ -17,6 +19,7 @@ class Party(models.Model):
 
     name = models.CharField(verbose_name=u'Nombre', blank=False, null=False, max_length=60)
     address = models.CharField(verbose_name=u'Dirección', blank=False, null=False, max_length=80)
+    color = ColorField(default='#FF0000')
 
     def __str__(self):
         return self.name

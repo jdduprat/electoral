@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Voto, VotoSummary
+from .models import Voto, VotoSummary, VotoCharge
 from django.db.models import Count, Sum, Min, Max, DateField
 from django.db.models.functions import Trunc
-
+from jet.filters import RelatedFieldAjaxListFilter
 
 @admin.register(Voto)
 class VotoAdmin(admin.ModelAdmin):
@@ -89,7 +89,7 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
 
         response.context_data['summary'] = list(
             qs
-            .values('electoral_list__party__name', 'category__name', 'electoral_list__name')
+            .values('electoral_list__party__name', 'electoral_list__party__color', 'category__name', 'electoral_list__name')
             .annotate(**metrics)
             .order_by('-total_votes')
         )
@@ -97,4 +97,42 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
         # List view summary
         response.context_data['summary_total'] = dict(qs.aggregate(**metrics))
         
+        return response
+
+
+#@admin.register(VotoCharge)
+class LoadVotoChargeAdmin(admin.ModelAdmin):
+    change_list_template = 'votes_list.1.html'
+    list_filter = (
+        'election',
+        'table__school',
+        ('table', RelatedFieldAjaxListFilter),
+        'electoral_list__party',
+        'category',
+        'electoral_list',
+    )
+
+    def changelist_view(self, request, extra_context=None):
+        response = super().changelist_view(request, extra_context=extra_context)
+
+        # self.get_queryset would return the base queryset. ChangeList
+        # apply the filters from the request so this is the only way to
+        # get the filtered queryset.
+
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            # See issue #172.
+            # When an invalid filter is used django will redirect. In this
+            # case the response is an http redirect response and so it has
+            # no context_data.
+            return response
+
+            
+        response.context_data['schools'] = School.objects.all()
+        response.context_data['tables'] = Table.objects.all()
+        response.context_data['categories'] = Category.objects.filter(election__current=True).order_by('pk')
+        response.context_data['users'] = Usuario.objects.all()
+        response.context_data['votes'] = qs.filter(election__current=True).order_by('electoral_list__party', 'electoral_list', 'category__pk')
+
         return response

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     #Externas
+    'colorfield',
     
     #Mine
     'apps.places',
@@ -164,6 +165,7 @@ JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
     {'label': 'Reportes', 'items': [
         {'name': 'voto.voto'},
         {'name': 'voto.votosummary'},
+        {'label': 'Control Carga Datos', 'url': '/reporte_carga', 'url_blank': True},
         {'label': 'Reportes Públicos', 'url': '/', 'url_blank': True},
     ]},
     {'label': 'Ayuda', 'url': '/static/manual.pdf', 'url_blank': True},

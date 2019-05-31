@@ -115,12 +115,12 @@
         }    
         votes_per_party_labels[c].push('{{v.electoral_list__party__name}}');
         votes_per_party_data[c].push('{{v.quantity__sum}}');
-        color = dynamicColors();
-        colors_party[c].push("rgba(" + color + ", 0.35)");
-        colors_border_party[c].push("rgba(" + color + ", .7)");
+        color = '{{v.electoral_list__party__color}}'; //dynamicColors();
+        colors_party[c].push('{{v.electoral_list__party__color}}'); //"rgba(" + color + ", 0.35)");
+        colors_border_party[c].push('{{v.electoral_list__party__color}}');//("rgba(" + color + ", .7)");
 
         var per = '{{v.quantity__sum}}' + " - " + (parseInt('{{v.quantity__sum}}') / qty_bycat[c] * 100 ).toFixed(0) + "%"; 
-        putLegend(c, "rgba(" + color + ", 0.35)", '{{v.electoral_list__party__name}}', per);
+        putLegend(c, ('{{v.electoral_list__party__color}}'), '{{v.electoral_list__party__name}}', per);
         
     {% endfor %}                         
 
