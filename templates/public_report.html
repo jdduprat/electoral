@@ -308,7 +308,7 @@
                   var chartInstance = this.chart,
                   ctx = chartInstance.ctx;
 
-                  ctx.font = '12px LatoRegular, Helvetica,sans-serif';
+                  ctx.font = '12px LatoBold, Helvetica,sans-serif';
                   ctx.textAlign = 'center';
                   ctx.textBaseline = 'bottom';
 
@@ -317,7 +317,7 @@
                     meta.data.forEach(function(bar, index) {
                         var data = dataset.data[index];
                         var t = qty_bycat[c];
-                        ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', bar._model.x + 50, bar._model.y + 7);
+                        ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', bar._model.x + 30, bar._model.y + 7);
                     });
                   });
                 }
