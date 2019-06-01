@@ -249,7 +249,7 @@
           colors_party[c] = [];
           colors_border_party[c] = [];
         }    
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 8) + ': ' + '{{ v.electoral_list__head }}');
+        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 4) + ': ' + '{{ v.electoral_list__head }}');
         votes_per_party_data[c].push('{{v.quantity__sum}}');
         color = '{{v.electoral_list__party__color}}';
         colors_party[c].push(color);
@@ -317,7 +317,14 @@
                     var meta = chartInstance.controller.getDatasetMeta(i);
                     meta.data.forEach(function(bar, index) {
                         var data = dataset.data[index];                        
-                        ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', bar._model.x + 30, bar._model.y + 7);
+                        var x_ = bar._model.x;
+                        console.log(data + '  ' + x_);
+                        if ( data < 80 ) {
+                          x_ += 30;
+                        }else{
+                          x_ -= 30;
+                        }
+                        ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', x_, bar._model.y + 7);
                     });
                   });
                 }
