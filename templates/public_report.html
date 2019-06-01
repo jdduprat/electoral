@@ -12,7 +12,7 @@
     <div class="col-sm-12">
         <div class='element-wrapper'>
           <h6 class="element-header">Resultados Parciales</h6> 
-          <div class="row pt-4">
+          <div class="row pt-4">            
             <div class="water-mark"></div>
             <div class="col-sm-8">
               {% for c in categories %} 
@@ -27,7 +27,7 @@
                     </div>
                   </div>
               </div> 
-              {% endfor %}        
+              {% endfor %}                       
             </div>
             <div class="col-sm-4">
               <div class="element-box-tp">                  
@@ -64,6 +64,16 @@
                   </div> 
                 {% endfor %}                     
               </div>
+            </div>
+            <div class="col-sm-12">
+              {% for c in categories %} 
+                <div class='element-box'>
+                    <h6 class="element-header">{{c.name}}</h6>
+                    <div class='el-chart-w'>
+                      <canvas id="myChartBar-{{c.pk}}" height="350" width="350"></canvas>  
+                    </div> 
+                </div> 
+              {% endfor %} 
             </div>
           </div> <!--end row-->
         </div>
@@ -123,7 +133,7 @@
         putLegend(c, ('{{v.electoral_list__party__color}}'), '{{v.electoral_list__party__name}}', per);
         
     {% endfor %}                         
-    //#FFFFFF, #CDCDCD, #AEAEAE, #FF42D7
+    //['#FFFFFF', '#CDCDCD', '#AEAEAE', '#FF42D7']
     {% for v in other_votes_bycat %}  
         c = parseInt('{{v.category__pk}}'); 
         if (votes_per_party_labels[c] === undefined) {
@@ -194,8 +204,8 @@
                 onComplete: function () {
                     var ctx = this.chart.ctx;
                     ctx.font='12px LatoRegular, Helvetica,sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'bottom';
+                    //ctx.textAlign = 'center';
+                    //ctx.textBaseline = 'bottom';
                     this.data.datasets.forEach(function (dataset) {
                         for (var i = 0; i < dataset.data.length; i++) {
                             var m = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
@@ -214,7 +224,6 @@
                                ctx.fillText(dataset.data[i], m.x + x, m.y + y-7);
                                ctx.fillText(String(perc) + "%", m.x + x, m.y + y + 8);
                             }             
-                                //ctx.fillText(m.label, m.x + x, m.y + y-25);
                         }
                     });
                 }
@@ -222,8 +231,100 @@
           }
       });  
     {% endfor %}
-       
-  
+
+</script>
+
+<script>
+    var votes_per_party_labels = [];   
+    var votes_per_party_data = [];     
+    var colors_party = [];
+    var colors_border_party = [];
+    var c, color; 
+
+      {% for v in votes_bylist %}  
+        c = parseInt('{{v.category__pk}}'); 
+        if (votes_per_party_labels[c] === undefined) {
+          votes_per_party_labels[c] = [];
+          votes_per_party_data[c] = [];
+          colors_party[c] = [];
+          colors_border_party[c] = [];
+        }    
+        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 8) + ': ' + '{{ v.electoral_list__head }}');
+        votes_per_party_data[c].push('{{v.quantity__sum}}');
+        color = '{{v.electoral_list__party__color}}';
+        colors_party[c].push(color);
+        colors_border_party[c].push(color); 
+      {% endfor %}   
+
+      {% for v in other_votes_bylist %}  
+        c = parseInt('{{v.category__pk}}'); 
+        if (votes_per_party_labels[c] === undefined) {
+          votes_per_party_labels[c] = [];
+          votes_per_party_data[c] = [];
+          colors_party[c] = [];
+          colors_border_party[c] = [];
+        }    
+        votes_per_party_labels[c].push('{{v.electoral_list__name}}');
+        votes_per_party_data[c].push('{{v.quantity__sum}}');
+        color = "rgba(" + dynamicColors() + ", 0.7)";
+        colors_party[c].push(color);
+        colors_border_party[c].push(color); 
+      {% endfor %}   
+
+      {% for c in categories %} 
+        c = parseInt('{{c.pk}}');
+        var ctx = document.getElementById('myChartBar-{{c.pk}}');
+        var myChart = new Chart(ctx, {
+            type: 'horizontalBar',
+            data: {
+                labels: votes_per_party_labels[c],
+                datasets: [{
+                    data: votes_per_party_data[c],
+                    backgroundColor: colors_party[c],
+                    hoverBackgroundColor: colors_border_party[c],
+                    borderColor: colors_border_party[c],
+                    borderWidth: 1,
+                    hoverBorderColor: 'transparent'
+                }]
+            },          
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              legend: {
+                  display: false
+              },
+              title: {
+                  display: true
+              },
+              scales: {
+                  xAxes: [{
+                      position: 'top'
+                  }]
+              },
+              events:false,
+              "animation": {
+              "duration": 1,
+              "onComplete": function() {
+                  var chartInstance = this.chart,
+                  ctx = chartInstance.ctx;
+
+                  ctx.font = '12px LatoRegular, Helvetica,sans-serif';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'bottom';
+
+                  this.data.datasets.forEach(function(dataset, i) {
+                    var meta = chartInstance.controller.getDatasetMeta(i);
+                    meta.data.forEach(function(bar, index) {
+                        var data = dataset.data[index];
+                        var t = qty_bycat[c];
+                        ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', bar._model.x + 50, bar._model.y + 7);
+                    });
+                  });
+                }
+              },
+          }
+        });  
+    {% endfor %}
 </script>
 
 {% endblock extra_js%}
