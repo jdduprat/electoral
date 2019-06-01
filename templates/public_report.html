@@ -309,16 +309,16 @@
                   var chartInstance = this.chart,
                   ctx = chartInstance.ctx;
 
-                  ctx.font = '12px LatoBold, Helvetica,sans-serif';
+                  ctx.font = 'bold 12px LatoBold, Helvetica,sans-serif';
                   ctx.textAlign = 'center';
                   ctx.textBaseline = 'bottom';
 
                   this.data.datasets.forEach(function(dataset, i) {
                     var meta = chartInstance.controller.getDatasetMeta(i);
                     meta.data.forEach(function(bar, index) {
-                        var data = dataset.data[index];                        
+                        var data = dataset.data[index];      
+                        console.log(dataset);                  
                         var x_ = bar._model.x;
-                        console.log(data + '  ' + x_);
                         if ( x_ < 300 ) {
                           x_ += 30;
                         }else{
