@@ -251,7 +251,7 @@
         }   
         var name = '{{ v.electoral_list__head }}'; 
         name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 5) + ': ' + name);
+        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 5) + ' - ' + name);
         votes_per_party_data[c].push('{{v.quantity__sum}}');
         color = '{{v.electoral_list__party__color}}';
         colors_party[c].push(color);
