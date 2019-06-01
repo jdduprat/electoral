@@ -316,13 +316,14 @@
                   this.data.datasets.forEach(function(dataset, i) {
                     var meta = chartInstance.controller.getDatasetMeta(i);
                     meta.data.forEach(function(bar, index) {
-                        var data = dataset.data[index];      
-                        console.log(dataset);                  
+                        var data = dataset.data[index];                      
                         var x_ = bar._model.x;
                         if ( x_ < 300 ) {
                           x_ += 30;
+                          ctx.fillStyle = "#000000";
                         }else{
                           x_ -= 30;
+                          ctx.fillStyle = "#FFFFFF";
                         }
                         ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', x_, bar._model.y + 7);
                     });
