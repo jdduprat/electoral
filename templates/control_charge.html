@@ -12,6 +12,7 @@
 {% block result_list %}
 
 <div class="results">
+    <div style="margin-bottom: 5px;"><span> {% if table.closed %} Mesa cerrada por {{ table.closed_by.first_name }} {{ table.closed_by.last_name }} {% endif %} </span></div>
     <table>
         <thead>
             <tr>

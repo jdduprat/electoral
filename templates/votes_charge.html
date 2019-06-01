@@ -19,7 +19,7 @@
             <div class="controls-above-table">
               <form class="form-horizontal">
                 <div class="row">
-                  <div class="col-sm-5">
+                  <div class="col-sm-4">
                     <div class="form-group row">
                       <label for="school-select" class="control-label col-xs-3" style="margin-right: 5px;">Escuela: </label>
                       <div class="col-sm-9">
@@ -31,7 +31,7 @@
                       </div>             
                     </div>              
                   </div> 
-                  <div class="col-sm-5">
+                  <div class="col-sm-4">
                     <div class="form-group row">
                       <label for="table-select" class="control-label col-xs-3" style="margin-right: 5px;">Mesa: </label>
                       <div class="col-sm-9">
@@ -42,6 +42,9 @@
                         </select>      
                       </div>
                     </div>    
+                  </div>
+                  <div class="col-sm-2" id="table-span">
+                    <span></span>
                   </div>
                   <!--div class="col-sm-3">
                     <div class="form-group row">
@@ -153,11 +156,11 @@
         var sel = document.getElementById('table-select');
         var selected = sel.options[sel.selectedIndex];
         var c = selected.getAttribute('closed');
-
-        if ( c == 'True'){
-          $('#save-btn').val('Re Abrir Mesa');
+  
+        if ( c ){
+          $('#table-span').find('span').html('Mesa CERRADA');
         } else {
-          $('#save-btn').val('Cerrar Mesa');
+          $('#table-span').find('span').html('');
         }
         $('tbody td[data]').hide();
         $('td[school="'+school+'"][table="'+table+'"]').show();

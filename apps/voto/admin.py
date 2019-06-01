@@ -155,9 +155,11 @@ class LoadVotoChargeAdmin(admin.ModelAdmin):
             # no context_data.
             return response
 
+        t = q['table__id__exact']
 
         response.context_data['categories'] = Category.objects.filter(election__current=True).order_by('pk')
         response.context_data['votes'] = list(qs.order_by('electoral_list__party', 'electoral_list', 'category__pk'))
         response.context_data['summary'] = list(qs.values('category__name').annotate(Sum('quantity')).order_by('category__pk'))
+        response.context_data['table'] = Table.objects.get(pk=t)
 
         return response
