@@ -28,6 +28,12 @@ def create_votes(self, request, queryset):
 create_votes.short_description = "Crear Registros para Conteo de Votos"
 
 
+def close_all_tables(self, request, queryset):
+    pass
+
+close_all_tables.short_description = "Cerrar todas las mesas"
+
+
 class ElectionAdmin(admin.ModelAdmin):
     list_display = ['description', 'date', 'current']
     list_filter = ['date', 'current']
