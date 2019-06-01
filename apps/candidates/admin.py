@@ -29,16 +29,22 @@ create_votes.short_description = "Crear Registros para Conteo de Votos"
 
 
 def close_all_tables(self, request, queryset):
-    pass
+    Table.objects.all().update(closed=True, closed_by=request.user)
 
 close_all_tables.short_description = "Cerrar todas las mesas"
+
+
+def open_all_tables(self, request, queryset):
+    Table.objects.all().update(closed=None, closed_by=None, reopen_by=request.user)
+
+open_all_tables.short_description = "Abrir todas las mesas"
 
 
 class ElectionAdmin(admin.ModelAdmin):
     list_display = ['description', 'date', 'current']
     list_filter = ['date', 'current']
     fields= ['description', 'date', 'current', 'categories', 'parties']
-    actions = [create_votes,]
+    actions = [create_votes, close_all_tables, open_all_tables, ]
 
 
 def check(self, request, queryset):

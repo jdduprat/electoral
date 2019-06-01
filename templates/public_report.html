@@ -273,6 +273,7 @@
 
       {% for c in categories %} 
         c = parseInt('{{c.pk}}');
+        var t = qty_bycat['{{c.pk}}'];
         var ctx = document.getElementById('myChartBar-{{c.pk}}');
         var myChart = new Chart(ctx, {
             type: 'horizontalBar',
@@ -315,8 +316,7 @@
                   this.data.datasets.forEach(function(dataset, i) {
                     var meta = chartInstance.controller.getDatasetMeta(i);
                     meta.data.forEach(function(bar, index) {
-                        var data = dataset.data[index];
-                        var t = qty_bycat[c];
+                        var data = dataset.data[index];                        
                         ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', bar._model.x + 30, bar._model.y + 7);
                     });
                   });
