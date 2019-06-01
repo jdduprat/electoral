@@ -32,3 +32,4 @@ class Table(models.Model):
     class Meta:
         verbose_name = 'mesa'
         verbose_name_plural = 'mesas'
+        ordering = ['-name',]
