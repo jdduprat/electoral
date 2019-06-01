@@ -248,8 +248,10 @@
           votes_per_party_data[c] = [];
           colors_party[c] = [];
           colors_border_party[c] = [];
-        }    
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 4) + ': ' + '{{ v.electoral_list__head }}');
+        }   
+        var name = '{{ v.electoral_list__head }}'; 
+        name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
+        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 5) + ': ' + name);
         votes_per_party_data[c].push('{{v.quantity__sum}}');
         color = '{{v.electoral_list__party__color}}';
         colors_party[c].push(color);
@@ -299,7 +301,7 @@
               },
               scales: {
                   xAxes: [{
-                      position: 'top'
+                      position: 'top',
                   }]
               },
               events:false,
@@ -309,7 +311,7 @@
                   var chartInstance = this.chart,
                   ctx = chartInstance.ctx;
 
-                  ctx.font = 'bold 12px LatoBold, Helvetica,sans-serif';
+                  ctx.font = '12px LatoBold, Helvetica,sans-serif';
                   ctx.textAlign = 'center';
                   ctx.textBaseline = 'bottom';
 
@@ -320,10 +322,10 @@
                         var x_ = bar._model.x;
                         if ( x_ < 300 ) {
                           x_ += 30;
-                          ctx.fillStyle = "#000000";
+                          //ctx.fillStyle = "#000000";
                         }else{
                           x_ -= 30;
-                          ctx.fillStyle = "#FFFFFF";
+                          //ctx.fillStyle = "#FFFFFF";
                         }
                         ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', x_, bar._model.y + 7);
                     });
