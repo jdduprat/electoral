@@ -318,7 +318,8 @@
                   this.data.datasets.forEach(function(dataset, i) {
                     var meta = chartInstance.controller.getDatasetMeta(i);
                     meta.data.forEach(function(bar, index) {
-                        var data = dataset.data[index];                      
+                        var data = dataset.data[index];    
+                        //console.log(dataset);                  
                         var x_ = bar._model.x;
                         if ( x_ < 300 ) {
                           x_ += 30;

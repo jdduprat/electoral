@@ -35,7 +35,7 @@ close_all_tables.short_description = "Cerrar todas las mesas"
 
 
 def open_all_tables(self, request, queryset):
-    Table.objects.all().update(closed=None, closed_by=None, reopen_by=request.user)
+    Table.objects.all().update(closed=False, closed_by=None, reopen_by=request.user)
 
 open_all_tables.short_description = "Abrir todas las mesas"
 
