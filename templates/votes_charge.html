@@ -157,7 +157,7 @@
         var selected = sel.options[sel.selectedIndex];
         var c = selected.getAttribute('closed');
   
-        if ( c ){
+        if ( c == 'True' ){
           $('#table-span').find('span').html('Mesa CERRADA');
         } else {
           $('#table-span').find('span').html('');
