@@ -275,67 +275,71 @@
 
       {% for c in categories %} 
         c = parseInt('{{c.pk}}');
-        total_c = qty_bycat[c];
-        var ctx = document.getElementById('myChartBar-{{c.pk}}');
-        var myChart = new Chart(ctx, {
-            type: 'horizontalBar',
-            data: {
-                labels: votes_per_party_labels[c],
-                datasets: [{
-                    data: votes_per_party_data[c],
-                    backgroundColor: colors_party[c],
-                    hoverBackgroundColor: colors_border_party[c],
-                    borderColor: colors_border_party[c],
-                    borderWidth: 1,
-                    hoverBorderColor: 'transparent'
-                }]
-            },          
-            options: {
-              responsive: true,
-              maintainAspectRatio: true,
-              legend: {
-                  display: false
-              },
-              title: {
-                  display: true
-              },
-              scales: {
-                  xAxes: [{
-                      position: 'top',
+        newBar(c, qty_bycat[c]);
+      {% endfor %}
+
+      function newBar(cat_id, total_c){     
+        ctx = document.getElementById('myChartBar-' + cat_id);
+        
+        myChart = new Chart(ctx, {
+              type: 'horizontalBar',
+              data: {
+                  labels: votes_per_party_labels[cat_id],
+                  datasets: [{
+                      data: votes_per_party_data[cat_id],
+                      backgroundColor: colors_party[cat_id],
+                      hoverBackgroundColor: colors_border_party[cat_id],
+                      borderColor: colors_border_party[cat_id],
+                      borderWidth: 1,
+                      hoverBorderColor: 'transparent'
                   }]
-              },
-              events:false,
-              "animation": {
-              "duration": 1,
-              "onComplete": function() {
-                  var chartInstance = this.chart,
-                  ctx = chartInstance.ctx;
+              },          
+              options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true
+                },
+                scales: {
+                    xAxes: [{
+                        position: 'top',
+                    }]
+                },
+                events:false,
+                "animation": {
+                "duration": 1,
+                "onComplete": function() {
+                    var chartInstance = this.chart,
+                    ctx = chartInstance.ctx;
 
-                  ctx.font = '12px LatoBold, Helvetica,sans-serif';
-                  ctx.textAlign = 'center';
-                  ctx.textBaseline = 'bottom';
+                    ctx.font = '12px LatoBold, Helvetica,sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
 
-                  this.data.datasets.forEach(function(dataset, i) {
-                    var meta = chartInstance.controller.getDatasetMeta(i);
-                    meta.data.forEach(function(bar, index) {
-                        var data = dataset.data[index];    
-                        //console.log(dataset);                  
-                        var x_ = bar._model.x;
-                        if ( x_ < 300 ) {
-                          x_ += 30;
-                          //ctx.fillStyle = "#000000";
-                        }else{
-                          x_ -= 30;
-                          //ctx.fillStyle = "#FFFFFF";
-                        }
-                        ctx.fillText(data + ' - ' + String(Math.round(data / total_c * 100, 0)) + '%', x_, bar._model.y + 7);
+                    this.data.datasets.forEach(function(dataset, i) {
+                      var meta = chartInstance.controller.getDatasetMeta(i);
+                      meta.data.forEach(function(bar, index) {
+                          var data = dataset.data[index];    
+                          //console.log(dataset);                  
+                          var x_ = bar._model.x;
+                          if ( x_ < 300 ) {
+                            x_ += 30;
+                            //ctx.fillStyle = "#000000";
+                          }else{
+                            x_ -= 30;
+                            //ctx.fillStyle = "#FFFFFF";
+                          }
+                          ctx.fillText(data + ' - ' + String(Math.round(data / total_c * 100, 0)) + '%', x_, bar._model.y + 7);
+                      });
                     });
-                  });
-                }
-              },
-          }
-        });  
-    {% endfor %}
+                  }
+                },
+            }
+          });  
+      }
 </script>
 
 {% endblock extra_js%}
