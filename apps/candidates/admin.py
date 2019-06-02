@@ -6,7 +6,7 @@ from apps.places.models import Table
 def create_votes(self, request, queryset):
     for obj in queryset:
         votes = Voto.objects.filter(election = obj.id)
-        if votes.count() > 0 or not obj.current:
+        if votes.count() > 0: # or not obj.current:
             #Exists votes for this election
             #votes.delete()
             self.message_user(request, "La elección seleccionada no está Vigente o ya posee votos.")

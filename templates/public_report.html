@@ -275,7 +275,7 @@
 
       {% for c in categories %} 
         c = parseInt('{{c.pk}}');
-        var t = qty_bycat['{{c.pk}}'];
+        total_c = qty_bycat[c];
         var ctx = document.getElementById('myChartBar-{{c.pk}}');
         var myChart = new Chart(ctx, {
             type: 'horizontalBar',
@@ -328,7 +328,7 @@
                           x_ -= 30;
                           //ctx.fillStyle = "#FFFFFF";
                         }
-                        ctx.fillText(data + ' - ' + String(Math.round(data / t * 100, 0)) + '%', x_, bar._model.y + 7);
+                        ctx.fillText(data + ' - ' + String(Math.round(data / total_c * 100, 0)) + '%', x_, bar._model.y + 7);
                     });
                   });
                 }
