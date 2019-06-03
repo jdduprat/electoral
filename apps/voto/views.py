@@ -86,3 +86,9 @@ def votesChart(request):
     context['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))
 
     return render(request, 'public_report.html', context)
+
+
+def manteinance(request):
+    context={}
+    
+    return render(request, 'manteinance.html', context)
