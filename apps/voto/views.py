@@ -79,8 +79,8 @@ def votesChart(request):
     context['votes_bylist'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('-quantity__sum')
     context['other_votes_bylist'] = other_votes.values('category__pk', 'electoral_list__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('-quantity__sum')
 
-    context['totals_votes'] = votes.aggregate(Sum('quantity'))
-    context['totals_positives'] = votes.exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
+    context['totals_votes'] = votes.filter(category__pk=1).aggregate(Sum('quantity'))
+    context['totals_positives'] = votes.filter(category__pk=1).exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
     context['totals_tables'] = Table.objects.filter(closed=True).count()
     context['totals_electors'] = Table.objects.all().aggregate(Sum('elctors_qty'))
     context['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))
