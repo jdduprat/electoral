@@ -34,7 +34,7 @@
                 <div class="col-sm-12">
                   <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
                     <div class="label">Electores Inscriptos</div>
-                    <div class="value">{{totals_electors.elctors_qty__sum|intcomma}}</div>
+                    <div class="value">{{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}}</div>
                   </a>
                 </div>      
                 <div class="col-sm-12">
@@ -46,20 +46,20 @@
                 <div class="col-sm-12">
                   <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
                     <div class="label">Votos Emitidos</div>
-                    <div class="value">{{totals_votes.quantity__sum|intcomma}}</div>
+                    <div class="value">{{totals_votes.quantity__sum|default_if_none:0|intcomma}}</div>
                   </a>
                 </div>                
                 <div class="col-sm-12">
                   <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
                     <div class="label">Votos Positivos</div>
-                    <div class="value">{{totals_positives.quantity__sum|intcomma}}</div>
+                    <div class="value">{{totals_positives.quantity__sum|default_if_none:0|intcomma}}</div>
                   </a>
                 </div>      
                 {% for v in other_votes %}                        
                   <div class="col-sm-12">
                     <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
                       <div class="label">{{v.electoral_list__name}}</div>
-                      <div class="value">{{v.quantity__sum|intcomma}}</div>
+                      <div class="value">{{v.quantity__sum|default_if_none:0|intcomma}}</div>
                     </a>
                   </div> 
                 {% endfor %}                     

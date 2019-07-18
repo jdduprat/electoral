@@ -30,8 +30,8 @@ urlpatterns = [
     re_path(r'^carga/$', view=votesList, name='carga'),
     re_path(r'^update_vote/$', view=updateVote, name='update_vote'),
     re_path(r'^close_table/$', view=closeTable, name='close_table'),
-    #re_path(r'^$', view=votesChart, name='chart'),
-    re_path(r'^$', view=manteinance, name='chart'),
+    re_path(r'^$', view=votesChart, name='chart'),
+    #re_path(r'^$', view=manteinance, name='chart'),
 
 ]
 
