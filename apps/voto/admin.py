@@ -6,12 +6,14 @@ from jet.filters import RelatedFieldAjaxListFilter
 
 @admin.register(Voto)
 class VotoAdmin(admin.ModelAdmin):
-    list_display = ['get_school', 'election', 'table', 'category', 'electoral_list', 'quantity']
-    list_filter = ['election', 'category']
+    list_display = ['election', 'get_school', 'table', 'category', 'electoral_list', 'quantity']
+    list_filter = ['election', 'table__school', 'table', 'category', 'electoral_list', 'quantity']
     fields= ['election', 'table', 'category', 'electoral_list', 'quantity']
 
     def get_school(self, obj):
         return obj.table.school
+
+    get_school.short_description = 'Escuela'
 
     def get_queryset(self, request):
         qs = super(VotoAdmin, self).get_queryset(request)
@@ -49,8 +51,8 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
         'table__school',
         'table',
         'electoral_list__party',
-        'category',
         'electoral_list',
+        'category'
     )
 
     def has_add_permission(self, request):

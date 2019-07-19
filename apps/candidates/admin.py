@@ -41,9 +41,9 @@ open_all_tables.short_description = "Abrir todas las mesas"
 
 
 class ElectionAdmin(admin.ModelAdmin):
-    list_display = ['description', 'date', 'current']
-    list_filter = ['date', 'current']
-    fields= ['description', 'date', 'current', 'categories', 'parties']
+    list_display = ['description', 'date', 'year', 'current']
+    list_filter = ['date', 'year', 'current']
+    fields= ['description', 'date', 'year', 'current', 'categories', 'parties']
     actions = [create_votes, close_all_tables, open_all_tables, ]
 
 
@@ -70,8 +70,9 @@ uncheck.short_description = "Quitar Vigencia"
 
 
 class PartyAdmin(admin.ModelAdmin):
-    list_display = ['name', 'address', 'color']
-    fields= ['name', 'address', 'color']
+    list_display = ['name', 'address', 'city', 'color']
+    list_filter = ['city']
+    fields= ['name', 'address', 'city', 'color']
 
 
 class ElectoralListAdmin(admin.ModelAdmin):
@@ -83,7 +84,7 @@ class ElectoralListAdmin(admin.ModelAdmin):
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name']
-    list_filter = ['election__categories']
+    list_filter = []
     fields= ['name']
 
 admin.site.register(Election, ElectionAdmin)

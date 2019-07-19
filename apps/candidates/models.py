@@ -1,5 +1,6 @@
 from django.db import models
 from colorfield.fields import ColorField
+from apps.cities.models import City
 
 
 class Category(models.Model):
@@ -19,6 +20,7 @@ class Party(models.Model):
 
     name = models.CharField(verbose_name=u'Nombre', blank=False, null=False, max_length=60)
     address = models.CharField(verbose_name=u'Dirección', blank=False, null=False, max_length=80)
+    city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=False, null=True, verbose_name='Ciudad')
     color = ColorField(default='#FF0000')
 
     def __str__(self):
@@ -32,6 +34,7 @@ class Party(models.Model):
 class Election(models.Model):
     description = models.CharField(verbose_name=u'Descripción', blank=True, null=True, max_length=120)
     date = models.DateField(verbose_name=u'Fecha')
+    year = models.IntegerField(verbose_name=u'Año', blank=False, null=False, default=2000)
     current = models.BooleanField(verbose_name=u'Vigente')
     categories = models.ManyToManyField(Category, blank=False, verbose_name=u'Categorías')
     parties = models.ManyToManyField(Party, verbose_name=u'Partidos')
