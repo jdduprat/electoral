@@ -37,3 +37,10 @@ class VotoCharge(Voto):
         proxy = True
         verbose_name = 'Control de Carga de Votos'
         verbose_name_plural = 'Control de Carga de Votos'
+
+
+class VotoGraphs(Voto):
+    class Meta:
+        proxy = True
+        verbose_name = 'Gráficos Resultados por Elección'
+        verbose_name_plural = 'Gráficos Resultados por Elección'

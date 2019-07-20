@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
+# https://docs.djangoproject.com/en/2.2/topics/i18n/ 
 
 LANGUAGE_CODE = 'es-ar'
 
@@ -132,7 +132,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS =  (os.path.join(os.path.dirname(BASE_DIR), "static"), '/Desarrollos/web/electoral/static/')
+STATICFILES_DIRS =  (os.path.join(os.path.dirname(BASE_DIR), "static"), 'C:/Users/jd_du/Documents/Desarrollos/electoral/static')
 
 #JET_SIDE_MENU_COMPACT = True
 
@@ -166,7 +166,8 @@ JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
         {'name': 'voto.voto'},
         {'name': 'voto.votosummary'},
         {'name': 'voto.votocharge'},
-        {'label': 'Reportes Públicos', 'url': '/', 'url_blank': True},
+        {'name': 'voto.votographs'},
+        {'label': 'Ir a Reporte Público', 'url': '/', 'url_blank': True},
     ]},
     {'label': 'Ayuda', 'url': '/static/manual.pdf', 'url_blank': True},
 ]
