@@ -7,6 +7,7 @@ class Category(models.Model):
 
     name = models.CharField(verbose_name=u'Nombre', blank=False, null=False, max_length=60)
     is_listless = models.BooleanField(verbose_name=u'Sin Lista', blank=False, null=False, default=False)
+    order = models.IntegerField(verbose_name=u'Orden de Carga', blank=False, null=False, default=0)
 
     def __str__(self):
         return self.name

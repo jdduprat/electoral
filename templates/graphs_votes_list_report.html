@@ -24,87 +24,7 @@
   <script src="{% static 'mines/bower_components/chart.js/dist/Chart.min.js'%}"></script>
   <script src="{% static 'mines/bower_components/select2/dist/js/select2.full.min.js'%}"></script>
   <script src="{% static 'mines/bower_components/datatables.net/js/jquery.dataTables.js'%}"></script>
-{% endblock %}
-
-{% block result_list %}
-<div class="content-i col-sm-6" style="margin: 0 auto;">
-  <div class="content-box">
-    <div class="col-sm-12">
-        <div class='element-wrapper'>
-          <h6 class="element-header">Resultados Parciales</h6> 
-          <div class="row pt-4">            
-            <div class="water-mark"></div>
-            <div class="col-sm-8">
-              {% for c in categories %} 
-              <div class='element-box'>
-                  <h6 class="element-header">{{c.name}}</h6>
-                  <div class='el-chart-w'>
-                    <canvas id="myChart-{{c.pk}}" height="350" width="350"></canvas>  
-                  </div> 
-                  <div class="el-legend condensed">
-                    <div id="legend-{{c.pk}}">
-                      
-                    </div>
-                  </div>
-              </div> 
-              {% endfor %}                       
-            </div>
-            <div class="col-sm-4">
-              <div class="element-box-tp">                  
-                <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
-                    <div class="label">Electores Inscriptos</div>
-                    <div class="value">{{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}}</div>
-                  </a>
-                </div>      
-                <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
-                    <div class="label">Mesas Escrutadas</div>
-                    <div class="value">{{totals_tables}}</div>
-                  </a>
-                </div>                     
-                <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
-                    <div class="label">Votos Emitidos</div>
-                    <div class="value">{{totals_votes.quantity__sum|default_if_none:0|intcomma}}</div>
-                  </a>
-                </div>                
-                <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
-                    <div class="label">Votos Positivos</div>
-                    <div class="value">{{totals_positives.quantity__sum|default_if_none:0|intcomma}}</div>
-                  </a>
-                </div>      
-                {% for v in other_votes %}                        
-                  <div class="col-sm-12">
-                    <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
-                      <div class="label">{{v.electoral_list__name}}</div>
-                      <div class="value">{{v.quantity__sum|default_if_none:0|intcomma}}</div>
-                    </a>
-                  </div> 
-                {% endfor %}                     
-              </div>
-            </div>
-            <div class="col-sm-12">
-              {% for c in categories %} 
-                <div class='element-box'>
-                    <h6 class="element-header">{{c.name}}</h6>
-                    <div class='el-chart-w'>
-                      <canvas id="myChartBar-{{c.pk}}" height="350" width="350"></canvas>  
-                    </div> 
-                </div> 
-              {% endfor %} 
-            </div>
-          </div> <!--end row-->
-        </div>
-    </div>
-  </div>
-</div>
-{% endblock %}
-
-{% block extra_js%}
-
-<script>
+  <script>
     $(document).ready(function(){
       setTimeout(function(){location.reload()}, 20000);
     });
@@ -363,6 +283,82 @@
       }
 </script>
 
-{% endblock extra_js%}
+{% endblock %}
+
+{% block result_list %}
+<div class="content-i col-sm-6" style="margin: 0 auto;">
+  <div class="content-box">
+    <div class="col-sm-12">
+        <div class='element-wrapper'>
+          <h6 class="element-header">Resultados Parciales</h6> 
+          <div class="row pt-4">            
+            <div class="water-mark"></div>
+            <div class="col-sm-8">
+              {% for c in categories %} 
+              <div class='element-box'>
+                  <h6 class="element-header">{{c.name}}</h6>
+                  <div class='el-chart-w'>
+                    <canvas id="myChart-{{c.pk}}" height="350" width="350"></canvas>  
+                  </div> 
+                  <div class="el-legend condensed">
+                    <div id="legend-{{c.pk}}">
+                      
+                    </div>
+                  </div>
+              </div> 
+              {% endfor %}                       
+            </div>
+            <div class="col-sm-4">
+              <div class="element-box-tp">                  
+                <div class="col-sm-12">
+                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <div class="label">Electores Inscriptos</div>
+                    <div class="value">{{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}}</div>
+                  </a>
+                </div>      
+                <div class="col-sm-12">
+                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <div class="label">Mesas Escrutadas</div>
+                    <div class="value">{{totals_tables}}</div>
+                  </a>
+                </div>                     
+                <div class="col-sm-12">
+                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <div class="label">Votos Emitidos</div>
+                    <div class="value">{{totals_votes.quantity__sum|default_if_none:0|intcomma}}</div>
+                  </a>
+                </div>                
+                <div class="col-sm-12">
+                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <div class="label">Votos Positivos</div>
+                    <div class="value">{{totals_positives.quantity__sum|default_if_none:0|intcomma}}</div>
+                  </a>
+                </div>      
+                {% for v in other_votes %}                        
+                  <div class="col-sm-12">
+                    <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                      <div class="label">{{v.electoral_list__name}}</div>
+                      <div class="value">{{v.quantity__sum|default_if_none:0|intcomma}}</div>
+                    </a>
+                  </div> 
+                {% endfor %}                     
+              </div>
+            </div>
+            <div class="col-sm-12">
+              {% for c in categories %} 
+                <div class='element-box'>
+                    <h6 class="element-header">{{c.name}}</h6>
+                    <div class='el-chart-w'>
+                      <canvas id="myChartBar-{{c.pk}}" height="350" width="350"></canvas>  
+                    </div> 
+                </div> 
+              {% endfor %} 
+            </div>
+          </div> <!--end row-->
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
 {% block pagination %}{% endblock %}

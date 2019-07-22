@@ -83,9 +83,9 @@ class ElectoralListAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name', 'order']
     list_filter = []
-    fields= ['name']
+    fields= ['name', 'order']
 
 admin.site.register(Election, ElectionAdmin)
 admin.site.register(Party, PartyAdmin)
