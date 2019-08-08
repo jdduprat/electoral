@@ -20,270 +20,8 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-  <script src="{% static 'mines/bower_components/jquery/dist/jquery.min.js'%}"></script>
-  <script src="{% static 'mines/bower_components/select2/dist/js/select2.full.min.js'%}"></script>
-  <script src="{% static 'mines/bower_components/datatables.net/js/jquery.dataTables.js'%}"></script>
-  <script>
-    $(document).ready(function(){
-      setTimeout(function(){location.reload()}, 20000);
-    });
-
-    var votes_per_party_labels = [];   
-    var votes_per_party_data = [];   
-    var other_votes = [];   
-    var colors_elist = []; 
-    var colors_border_elist = [];           
-    var colors_party = [];
-    var colors_border_party = [];
-    var qty_bycat = []
-    var c, color; 
-
-    var dynamicColors = function() {
-      var r = Math.floor(Math.random() * 255);
-      var g = Math.floor(Math.random() * 255);
-      var b = Math.floor(Math.random() * 255);
-      return r + "," + g + "," + b;
-    };
-    
-    var putLegend = function(c, color, legend, perc) { 
-      $('#legend-' + c).append('<div class="col-auto col-xxxxl-6 col-6"><div class="legend-value-w">' + 
-          '<div class="legend-pin" style="background-color: ' + color + ';margin-right: 4px;"></div>' + 
-          '<div class="legend-value"><span>' + legend + '</span><div class="legend-sub-value">' + perc + '</div></div></div></div>');
-    }
-
-    {% for v in qty_bycat %}  
-      qty_bycat['{{v.category__pk}}'] = '{{v.quantity__sum}}'
-    {% endfor %}
-
-    {% for v in votes_per_party %}  
-        c = parseInt('{{v.category__pk}}'); 
-        if (votes_per_party_labels[c] === undefined) {
-          votes_per_party_labels[c] = [];
-          votes_per_party_data[c] = [];
-          colors_party[c] = [];
-          colors_border_party[c] = [];
-        }    
-        votes_per_party_labels[c].push('{{v.electoral_list__party__name}}');
-        votes_per_party_data[c].push('{{v.quantity__sum}}');
-        color = '{{v.electoral_list__party__color}}'; //dynamicColors();
-        colors_party[c].push('{{v.electoral_list__party__color}}'); //"rgba(" + color + ", 0.35)");
-        colors_border_party[c].push('{{v.electoral_list__party__color}}');//("rgba(" + color + ", .7)");
-
-        var per = '{{v.quantity__sum}}' + " - " + (parseInt('{{v.quantity__sum}}') / qty_bycat[c] * 100 ).toFixed(0) + "%"; 
-        putLegend(c, ('{{v.electoral_list__party__color}}'), '{{v.electoral_list__party__name}}', per);
-        
-    {% endfor %}                         
-    //['#FFFFFF', '#CDCDCD', '#AEAEAE', '#FF42D7']
-    {% for v in other_votes_bycat %}  
-        c = parseInt('{{v.category__pk}}'); 
-        if (votes_per_party_labels[c] === undefined) {
-          votes_per_party_labels[c] = [];
-          votes_per_party_data[c] = [];
-          colors_party[c] = [];
-          colors_border_party[c] = [];
-        }    
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}');
-        votes_per_party_data[c].push('{{v.quantity__sum}}');
-        color = dynamicColors();
-        colors_party[c].push("rgba(" + color + ", 0.35)");
-        colors_border_party[c].push("rgba(" + color + ", 0.7)");
-
-        var p = '{{v.quantity__sum}}' + " - " + (parseInt('{{v.quantity__sum}}') / qty_bycat[c] * 100).toFixed(0) + "%"; 
-        putLegend(c, "rgba(" + color + ", 0.35)", '{{v.electoral_list__name}}', p);
-    {% endfor %} 
-
-    {% for c in categories %} 
-      c = parseInt('{{c.pk}}');
-      var ctx = document.getElementById('myChart-{{c.pk}}');
-      var myChart = new Chart(ctx, {
-          type: 'pie',
-          data: {
-              labels: votes_per_party_labels[c],
-              datasets: [{
-                  data: votes_per_party_data[c],
-                  backgroundColor: colors_party[c],
-                  hoverBackgroundColor: colors_border_party[c],
-                  borderColor: colors_border_party[c],
-                  borderWidth: 1,
-                  hoverBorderColor: 'transparent'
-              }]
-          },
-          /*options: {
-            legend: {
-              display: false,
-              position: 'bottom',
-              labels: {
-                  fontColor: '#333',
-              }
-            },
-            tooltips: {
-              enabled: true,
-              callbacks: {
-                label: function(tooltipItem, data) {
-                  var dataset = data.datasets[tooltipItem.datasetIndex];
-                  var label = data.labels[tooltipItem.index] || '';
-                  if (label) {
-                      label += ': ';
-                  }
-                  var t = dataset._meta[Object.keys(dataset._meta)[0]].total;
-                  var p = String(Math.round(dataset.data[tooltipItem.index]/t*100)) + "%"; 
-
-                  return label + p;
-                }
-              }
-            }
-          }*/
-          options: {
-            legend: {
-              display: false,
-            },
-            events: false,
-            animation: {
-                duration: 1200,
-                easing: "easeOutQuart",
-                onComplete: function () {
-                    var ctx = this.chart.ctx;
-                    ctx.font='12px LatoRegular, Helvetica,sans-serif';
-                    //ctx.textAlign = 'center';
-                    //ctx.textBaseline = 'bottom';
-                    this.data.datasets.forEach(function (dataset) {
-                        for (var i = 0; i < dataset.data.length; i++) {
-                            var m = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
-                                t = dataset._meta[Object.keys(dataset._meta)[0]].total,
-                                mR = m.innerRadius + (m.outerRadius - m.innerRadius) / 2,
-                                sA = m.startAngle,
-                                eA = m.endAngle,
-                                mA = sA + (eA - sA)/2;
-                            var x = mR * Math.cos(mA);
-                            var y = mR * Math.sin(mA);
-                            ctx.fillStyle = '#333';
-
-                            var perc = Math.round(dataset.data[i]/t*100);
-
-                            if ( perc > 10 && dataset.data[i] > 0 ) {
-                               ctx.fillText(dataset.data[i], m.x + x, m.y + y-7);
-                               ctx.fillText(String(perc) + "%", m.x + x, m.y + y + 8);
-                            }             
-                        }
-                    });
-                }
-            }
-          }
-      });  
-    {% endfor %}
-
-</script>
-
-<script>
-    var votes_per_party_labels = [];   
-    var votes_per_party_data = [];     
-    var colors_party = [];
-    var colors_border_party = [];
-    var c, color; 
-
-      {% for v in votes_bylist %}  
-        c = parseInt('{{v.category__pk}}'); 
-        if (votes_per_party_labels[c] === undefined) {
-          votes_per_party_labels[c] = [];
-          votes_per_party_data[c] = [];
-          colors_party[c] = [];
-          colors_border_party[c] = [];
-        }   
-        var name = '{{ v.electoral_list__head }}'; 
-        name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 5) + ' - ' + name);
-        votes_per_party_data[c].push('{{v.quantity__sum}}');
-        color = '{{v.electoral_list__party__color}}';
-        colors_party[c].push(color);
-        colors_border_party[c].push(color); 
-      {% endfor %}   
-
-      {% for v in other_votes_bylist %}  
-        c = parseInt('{{v.category__pk}}'); 
-        if (votes_per_party_labels[c] === undefined) {
-          votes_per_party_labels[c] = [];
-          votes_per_party_data[c] = [];
-          colors_party[c] = [];
-          colors_border_party[c] = [];
-        }    
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 15));
-        votes_per_party_data[c].push('{{v.quantity__sum}}');
-        color = "rgba(" + dynamicColors() + ", 0.7)";
-        colors_party[c].push(color);
-        colors_border_party[c].push(color); 
-      {% endfor %}   
-
-      {% for c in categories %} 
-        c = parseInt('{{c.pk}}');
-        newBar(c, qty_bycat[c]);
-      {% endfor %}
-
-      function newBar(cat_id, total_c){     
-        ctx = document.getElementById('myChartBar-' + cat_id);
-        
-        myChart = new Chart(ctx, {
-              type: 'horizontalBar',
-              data: {
-                  labels: votes_per_party_labels[cat_id],
-                  datasets: [{
-                      data: votes_per_party_data[cat_id],
-                      backgroundColor: colors_party[cat_id],
-                      hoverBackgroundColor: colors_border_party[cat_id],
-                      borderColor: colors_border_party[cat_id],
-                      borderWidth: 1,
-                      hoverBorderColor: 'transparent'
-                  }]
-              },          
-              options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                legend: {
-                    display: false
-                },
-                title: {
-                    display: true
-                },
-                scales: {
-                    xAxes: [{
-                        position: 'top',
-                    }]
-                },
-                events:false,
-                "animation": {
-                "duration": 1,
-                "onComplete": function() {
-                    var chartInstance = this.chart,
-                    ctx = chartInstance.ctx;
-
-                    ctx.font = '12px LatoBold, Helvetica,sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'bottom';
-
-                    this.data.datasets.forEach(function(dataset, i) {
-                      var meta = chartInstance.controller.getDatasetMeta(i);
-                      meta.data.forEach(function(bar, index) {
-                          var data = dataset.data[index];    
-                          //console.log(dataset);                  
-                          var x_ = bar._model.x;
-                          if ( x_ < 300 ) {
-                            x_ += 30;
-                            //ctx.fillStyle = "#000000";
-                          }else{
-                            x_ -= 30;
-                            //ctx.fillStyle = "#FFFFFF";
-                          }
-                          ctx.fillText(data + ' - ' + String(Math.round(data / total_c * 100, 0)) + '%', x_, bar._model.y + 7);
-                      });
-                    });
-                  }
-                },
-            }
-          });  
-      }
-</script>
-
 {% endblock %}
-
+ 
 {% block result_list %}
 <div class="content-i col-sm-6" style="margin: 0 auto;">
   <div class="content-box">
@@ -358,6 +96,271 @@
     </div>
   </div>
 </div>
+
+<!-- SCRIPTSS -->
+<script src="{% static 'mines/bower_components/jquery/dist/jquery.min.js'%}"></script>
+<script src="{% static 'mines/bower_components/select2/dist/js/select2.full.min.js'%}"></script>
+<script src="{% static 'mines/bower_components/datatables.net/js/jquery.dataTables.js'%}"></script>
+<script>
+  $(document).ready(function(){
+    setTimeout(function(){location.reload()}, 20000);
+  });
+
+  var votes_per_party_labels = [];   
+  var votes_per_party_data = [];   
+  var other_votes = [];   
+  var colors_elist = []; 
+  var colors_border_elist = [];           
+  var colors_party = [];
+  var colors_border_party = [];
+  var qty_bycat = []
+  var c, color; 
+
+  var dynamicColors = function() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return r + "," + g + "," + b;
+  };
+  
+  var putLegend = function(c, color, legend, perc) { 
+    $('#legend-' + c).append('<div class="col-auto col-xxxxl-6 col-6"><div class="legend-value-w">' + 
+        '<div class="legend-pin" style="background-color: ' + color + ';margin-right: 4px;"></div>' + 
+        '<div class="legend-value"><span>' + legend + '</span><div class="legend-sub-value">' + perc + '</div></div></div></div>');
+  }
+
+  {% for v in qty_bycat %}  
+    qty_bycat['{{v.category__pk}}'] = '{{v.quantity__sum}}'
+  {% endfor %}
+
+  {% for v in votes_per_party %}  
+      c = parseInt('{{v.category__pk}}'); 
+      if (votes_per_party_labels[c] === undefined) {
+        votes_per_party_labels[c] = [];
+        votes_per_party_data[c] = [];
+        colors_party[c] = [];
+        colors_border_party[c] = [];
+      }    
+      votes_per_party_labels[c].push('{{v.electoral_list__party__name}}');
+      votes_per_party_data[c].push('{{v.quantity__sum}}');
+      color = '{{v.electoral_list__party__color}}'; //dynamicColors();
+      colors_party[c].push('{{v.electoral_list__party__color}}'); //"rgba(" + color + ", 0.35)");
+      colors_border_party[c].push('{{v.electoral_list__party__color}}');//("rgba(" + color + ", .7)");
+
+      var per = '{{v.quantity__sum}}' + " - " + (parseInt('{{v.quantity__sum}}') / qty_bycat[c] * 100 ).toFixed(0) + "%"; 
+      putLegend(c, ('{{v.electoral_list__party__color}}'), '{{v.electoral_list__party__name}}', per);
+      
+  {% endfor %}                         
+  //['#FFFFFF', '#CDCDCD', '#AEAEAE', '#FF42D7']
+  {% for v in other_votes_bycat %}  
+      c = parseInt('{{v.category__pk}}'); 
+      if (votes_per_party_labels[c] === undefined) {
+        votes_per_party_labels[c] = [];
+        votes_per_party_data[c] = [];
+        colors_party[c] = [];
+        colors_border_party[c] = [];
+      }    
+      votes_per_party_labels[c].push('{{v.electoral_list__name}}');
+      votes_per_party_data[c].push('{{v.quantity__sum}}');
+      color = dynamicColors();
+      colors_party[c].push("rgba(" + color + ", 0.35)");
+      colors_border_party[c].push("rgba(" + color + ", 0.7)");
+
+      var p = '{{v.quantity__sum}}' + " - " + (parseInt('{{v.quantity__sum}}') / qty_bycat[c] * 100).toFixed(0) + "%"; 
+      putLegend(c, "rgba(" + color + ", 0.35)", '{{v.electoral_list__name}}', p);
+  {% endfor %} 
+
+  {% for c in categories %} 
+    c = parseInt('{{c.pk}}');
+    var ctx = document.getElementById('myChart-{{c.pk}}');
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: votes_per_party_labels[c],
+            datasets: [{
+                data: votes_per_party_data[c],
+                backgroundColor: colors_party[c],
+                hoverBackgroundColor: colors_border_party[c],
+                borderColor: colors_border_party[c],
+                borderWidth: 1,
+                hoverBorderColor: 'transparent'
+            }]
+        },
+        /*options: {
+          legend: {
+            display: false,
+            position: 'bottom',
+            labels: {
+                fontColor: '#333',
+            }
+          },
+          tooltips: {
+            enabled: true,
+            callbacks: {
+              label: function(tooltipItem, data) {
+                var dataset = data.datasets[tooltipItem.datasetIndex];
+                var label = data.labels[tooltipItem.index] || '';
+                if (label) {
+                    label += ': ';
+                }
+                var t = dataset._meta[Object.keys(dataset._meta)[0]].total;
+                var p = String(Math.round(dataset.data[tooltipItem.index]/t*100)) + "%"; 
+
+                return label + p;
+              }
+            }
+          }
+        }*/
+        options: {
+          legend: {
+            display: false,
+          },
+          events: false,
+          animation: {
+              duration: 1200,
+              easing: "easeOutQuart",
+              onComplete: function () {
+                  var ctx = this.chart.ctx;
+                  ctx.font='12px LatoRegular, Helvetica,sans-serif';
+                  //ctx.textAlign = 'center';
+                  //ctx.textBaseline = 'bottom';
+                  this.data.datasets.forEach(function (dataset) {
+                      for (var i = 0; i < dataset.data.length; i++) {
+                          var m = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+                              t = dataset._meta[Object.keys(dataset._meta)[0]].total,
+                              mR = m.innerRadius + (m.outerRadius - m.innerRadius) / 2,
+                              sA = m.startAngle,
+                              eA = m.endAngle,
+                              mA = sA + (eA - sA)/2;
+                          var x = mR * Math.cos(mA);
+                          var y = mR * Math.sin(mA);
+                          ctx.fillStyle = '#333';
+
+                          var perc = Math.round(dataset.data[i]/t*100);
+
+                          if ( perc > 10 && dataset.data[i] > 0 ) {
+                             ctx.fillText(dataset.data[i], m.x + x, m.y + y-7);
+                             ctx.fillText(String(perc) + "%", m.x + x, m.y + y + 8);
+                          }             
+                      }
+                  });
+              }
+          }
+        }
+    });  
+  {% endfor %}
+
+</script>
+
+<script>
+  var votes_per_party_labels = [];   
+  var votes_per_party_data = [];     
+  var colors_party = [];
+  var colors_border_party = [];
+  var c, color; 
+
+    {% for v in votes_bylist %}  
+      c = parseInt('{{v.category__pk}}'); 
+      if (votes_per_party_labels[c] === undefined) {
+        votes_per_party_labels[c] = [];
+        votes_per_party_data[c] = [];
+        colors_party[c] = [];
+        colors_border_party[c] = [];
+      }   
+      var name = '{{ v.electoral_list__head }}'; 
+      name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
+      votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 5) + ' - ' + name);
+      votes_per_party_data[c].push('{{v.quantity__sum}}');
+      color = '{{v.electoral_list__party__color}}';
+      colors_party[c].push(color);
+      colors_border_party[c].push(color); 
+    {% endfor %}   
+
+    {% for v in other_votes_bylist %}  
+      c = parseInt('{{v.category__pk}}'); 
+      if (votes_per_party_labels[c] === undefined) {
+        votes_per_party_labels[c] = [];
+        votes_per_party_data[c] = [];
+        colors_party[c] = [];
+        colors_border_party[c] = [];
+      }    
+      votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 15));
+      votes_per_party_data[c].push('{{v.quantity__sum}}');
+      color = "rgba(" + dynamicColors() + ", 0.7)";
+      colors_party[c].push(color);
+      colors_border_party[c].push(color); 
+    {% endfor %}   
+
+    {% for c in categories %} 
+      c = parseInt('{{c.pk}}');
+      newBar(c, qty_bycat[c]);
+    {% endfor %}
+
+    function newBar(cat_id, total_c){     
+      ctx = document.getElementById('myChartBar-' + cat_id);
+      
+      myChart = new Chart(ctx, {
+            type: 'horizontalBar',
+            data: {
+                labels: votes_per_party_labels[cat_id],
+                datasets: [{
+                    data: votes_per_party_data[cat_id],
+                    backgroundColor: colors_party[cat_id],
+                    hoverBackgroundColor: colors_border_party[cat_id],
+                    borderColor: colors_border_party[cat_id],
+                    borderWidth: 1,
+                    hoverBorderColor: 'transparent'
+                }]
+            },          
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              legend: {
+                  display: false
+              },
+              title: {
+                  display: true
+              },
+              scales: {
+                  xAxes: [{
+                      position: 'top',
+                  }]
+              },
+              events:false,
+              "animation": {
+              "duration": 1,
+              "onComplete": function() {
+                  var chartInstance = this.chart,
+                  ctx = chartInstance.ctx;
+
+                  ctx.font = '12px LatoBold, Helvetica,sans-serif';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'bottom';
+
+                  this.data.datasets.forEach(function(dataset, i) {
+                    var meta = chartInstance.controller.getDatasetMeta(i);
+                    meta.data.forEach(function(bar, index) {
+                        var data = dataset.data[index];    
+                        //console.log(dataset);                  
+                        var x_ = bar._model.x;
+                        if ( x_ < 300 ) {
+                          x_ += 30;
+                          //ctx.fillStyle = "#000000";
+                        }else{
+                          x_ -= 30;
+                          //ctx.fillStyle = "#FFFFFF";
+                        }
+                        ctx.fillText(data + ' - ' + String(Math.round(data / total_c * 100, 0)) + '%', x_, bar._model.y + 7);
+                    });
+                  });
+                }
+              },
+          }
+        });  
+    }
+</script>
 {% endblock %}
+
+
 
 {% block pagination %}{% endblock %}
