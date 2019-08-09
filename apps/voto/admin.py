@@ -68,8 +68,20 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
         return True
 
     def changelist_view(self, request, extra_context=None):
-        response = super().changelist_view(request, extra_context=extra_context)
+        q = request.GET.copy()
 
+        if not 'election__id__exact' in q:             
+            q['election__id__exact'] = str(Election.objects.get(current=True).pk)
+
+        if not 'category__id__exact' in q:     
+            election = q['election__id__exact']
+            cat_filter = Category.objects.filter(election=election).first()        
+            q['category__id__exact'] = str(cat_filter.pk)
+            
+        request.GET = q
+        request.META['QUERY_STRING'] = request.GET.urlencode()
+
+        response = super().changelist_view(request, extra_context=extra_context)
         # self.get_queryset would return the base queryset. ChangeList
         # apply the filters from the request so this is the only way to
         # get the filtered queryset.
@@ -83,7 +95,6 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
             # no context_data.
             return response
 
-
         # List view
         metrics = {
             'total_votes': Sum('quantity'),
@@ -91,11 +102,12 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
 
         response.context_data['summary'] = list(
             qs
-            .values('table__school', 'table', 'electoral_list__party__name', 'electoral_list__party__color', 'category__name', 'electoral_list__name', 'electoral_list__head')
+            .values('electoral_list__party__name', 'electoral_list__party__color', 'category__name', 'electoral_list__name', 'electoral_list__head')
+            #.filter(category__pk=cat_filter.pk)
             .annotate(**metrics)
             .order_by('-total_votes')
         )
-
+        
         # List view summary
         response.context_data['summary_total'] = dict(qs.aggregate(**metrics))
         
@@ -227,7 +239,7 @@ class VotoGraphsAdmin(admin.ModelAdmin):
         response.context_data['votes_bylist'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('-quantity__sum')
         response.context_data['other_votes_bylist'] = other_votes.values('category__pk', 'electoral_list__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('-quantity__sum')
 
-        cat_filter = Category.objects.filter(election__current=True).first()
+        cat_filter = Category.objects.filter(election=election).first()
 
         response.context_data['totals_votes'] = votes.filter(category__pk=cat_filter.pk).aggregate(Sum('quantity'))
         response.context_data['totals_positives'] = votes.filter(category__pk=cat_filter.pk).exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
