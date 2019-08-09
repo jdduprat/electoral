@@ -1,5 +1,6 @@
 from django.db import models
 from apps.cities.models import City
+from apps.candidates.models import Election
 from django.conf import settings
 
 class School(models.Model):
@@ -25,6 +26,7 @@ class Table(models.Model):
     closed = models.BooleanField(verbose_name='Cerrada', blank=False, null=False, default=False)
     closed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, blank=True, null=True, verbose_name=u'Cerrada por ', related_name='closed_by')
     reopen_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, blank=True, null=True, verbose_name=u'Re abierta por ', related_name='reopen_by')
+    election = models.ManyToManyField(Election,  blank=False, null=False, verbose_name=u'Elección')
 
     def __str__(self):
         return str(self.name)

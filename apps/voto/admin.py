@@ -215,7 +215,7 @@ class VotoGraphsAdmin(admin.ModelAdmin):
         votes = Voto.objects.filter(election=election)
         other_votes = Voto.objects.filter(election=election, electoral_list__party__isnull=True)
         
-        tables = Table.objects.filter(id__in=votes.values_list('table', flat=True))
+        tables = Table.objects.filter(election=election) #id__in=votes.values_list('table', flat=True))
         
         response.context_data['election'] = election
         response.context_data['categories'] = Category.objects.filter(election=election)
@@ -225,8 +225,10 @@ class VotoGraphsAdmin(admin.ModelAdmin):
         response.context_data['votes_bylist'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('-quantity__sum')
         response.context_data['other_votes_bylist'] = other_votes.values('category__pk', 'electoral_list__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('-quantity__sum')
 
-        response.context_data['totals_votes'] = votes.filter(category__pk=1).aggregate(Sum('quantity'))
-        response.context_data['totals_positives'] = votes.filter(category__pk=1).exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
+        cat_filter = Category.objects.filter(election__current=True).first()
+
+        response.context_data['totals_votes'] = votes.filter(category__pk=cat_filter.pk).aggregate(Sum('quantity'))
+        response.context_data['totals_positives'] = votes.filter(category__pk=cat_filter.pk).exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
         response.context_data['totals_tables'] = tables.exclude(closed=False).count()
         response.context_data['totals_electors'] = tables.aggregate(Sum('elctors_qty'))
         response.context_data['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))

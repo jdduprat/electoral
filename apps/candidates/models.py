@@ -40,6 +40,11 @@ class Election(models.Model):
     categories = models.ManyToManyField(Category, blank=False, verbose_name=u'Categorías')
     parties = models.ManyToManyField(Party, verbose_name=u'Partidos')
 
+    def save(self, *args, **kwargs):
+        if self.current:
+            Election.objects.all().update(current=False)
+        return super(Election, self).save( *args, **kwargs)
+
     def __str__(self):
         return self.description
 

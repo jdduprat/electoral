@@ -42,5 +42,5 @@ class VotoCharge(Voto):
 class VotoGraphs(Voto):
     class Meta:
         proxy = True
-        verbose_name = 'Gráficos Resultados por Elección'
-        verbose_name_plural = 'Gráficos Resultados por Elección'
+        verbose_name = 'Resultados en Gráficos'
+        verbose_name_plural = 'Resultados en Gráficos'

@@ -14,7 +14,7 @@ def create_votes(self, request, queryset):
             #Creo votos por mesa, lista y categoria de la eleccion
             categories = Category.objects.filter(election=obj)
             electoral_lists = ElectoralList.objects.filter(current=True, party__election=obj) | ElectoralList.objects.filter(current=True, party__isnull=True)
-            tables = Table.objects.all()
+            tables = Table.objects.filter(election=obj)
 
             count = 0
             for table in tables:
@@ -29,13 +29,15 @@ create_votes.short_description = "Crear Registros para Conteo de Votos"
 
 
 def close_all_tables(self, request, queryset):
-    Table.objects.all().update(closed=True, closed_by=request.user)
+    for obj in queryset:
+        Table.objects.filter(election=obj).update(closed=True, closed_by=request.user)
 
 close_all_tables.short_description = "Cerrar todas las mesas"
 
 
 def open_all_tables(self, request, queryset):
-    Table.objects.all().update(closed=False, closed_by=None, reopen_by=request.user)
+    for obj in queryset:
+        Table.objects.filter(election=obj).update(closed=False, closed_by=None, reopen_by=request.user)
 
 open_all_tables.short_description = "Abrir todas las mesas"
 

@@ -39,9 +39,9 @@ class SchoolAdmin(admin.ModelAdmin):
 
 class TableAdmin(admin.ModelAdmin): 
     list_display = ['name', 'school', 'elctors_qty', 'closed_by', 'reopen_by']
-    list_filter = ['school__city', 'school', 'closed_by']
-    fields= ['name', 'school', 'elctors_qty', 'closed']
+    list_filter = ['school__city', 'election', 'school', 'closed_by']
+    fields= ['name', 'school', 'elctors_qty', 'closed', 'election']
     
 
-admin.site.register(School, SchoolAdmin)
+admin.site.register(School, SchoolAdmin) 
 admin.site.register(Table, TableAdmin)
