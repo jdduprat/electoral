@@ -217,10 +217,13 @@
             ok: {
                 text: 'Aceptar',
                 btnClass: 'btn-red',
+                action: function(){
+                  obj.value=0;
+                  $(obj).focus();
+                }
             }
           }
         });
-        obj.value=0;
       }
     }
 
