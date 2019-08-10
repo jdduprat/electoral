@@ -112,8 +112,8 @@
                       <td>{{ cv.grouper.party.name }}</td>
                       <td>{{ cv.grouper }}</td>
                       {% for item in cv.list %}
-                        <td school={{item.table.school.pk}} table={{item.table.pk}} data>
-                          <input type="number" class="form-control bright" value={{item.quantity}} onchange="update_vote({{item.pk}}, {{item.table.school.pk}}, {{item.table.pk}}, this)">
+                        <td school={{item.table.school.pk}} table={{item.table.pk}} category={{item.category.pk}} data>
+                          <input type="number" class="form-control bright" value={{item.quantity}} onchange="update_vote({{item.pk}}, this)">
                         </td>
                       {% endfor %}
                     </tr>
@@ -179,9 +179,12 @@
     
     var token = '{{csrf_token}}';
     
-    function update_vote( id, school, table, obj ) {
+    function update_vote( id, obj ) {
+      var school = obj.parentElement.getAttribute('school');
+      var table = obj.parentElement.getAttribute('table');
+      var category = obj.parentElement.getAttribute('category');
       var total = 0;
-      $('td[school="'+school+'"][table="'+table+'"]').each(function(i, el){
+      $('td[school="'+school+'"][table="'+table+'"][category="'+category+'"]').each(function(i, el){
         total += parseInt($(this).find('input').val());
       });
       var sel = document.getElementById('table-select');
@@ -209,11 +212,12 @@
           content: 'La cantidad ingresada supera la cantidad de electores de la mesa',
           type: 'red',
           typeAnimated: true,
+          escapeKey: 'ok',
           buttons: {
-              ok: {
-                  text: 'Aceptar',
-                  btnClass: 'btn-red',
-              }
+            ok: {
+                text: 'Aceptar',
+                btnClass: 'btn-red',
+            }
           }
         });
         obj.value=0;

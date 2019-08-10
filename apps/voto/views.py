@@ -14,7 +14,7 @@ def votesList(request):
     context['schools'] = School.objects.filter(assigned_to=request.user)
     context['tables'] = Table.objects.filter(election__current=True, school__assigned_to=request.user)
     context['categories'] = Category.objects.filter(election__current=True).order_by('order')
-    context['votes'] = Voto.objects.filter(table__school__assigned_to=request.user, election__current=True).order_by('electoral_list__party', 'electoral_list', 'category__order')
+    context['votes'] = Voto.objects.filter(table__school__assigned_to=request.user, election__current=True).order_by('electoral_list__party', 'electoral_list', 'category__order', 'category__pk')
     
     return render(request, 'votes_charge.html', context)
 
