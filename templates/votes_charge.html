@@ -37,7 +37,7 @@
                       <div class="col-sm-9">
                         <select class="form-control form-control-sm js-select2" id="table-select" style="width:100%">
                           {% for t in tables %}
-                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}" closed="{{t.closed}}">{{t.name}}</option>
+                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}" closed="{{t.closed}}" qty_el="{{t.elctors_qty}}">{{t.name}}</option>
                           {% endfor %}
                         </select>      
                       </div>
@@ -113,7 +113,7 @@
                       <td>{{ cv.grouper }}</td>
                       {% for item in cv.list %}
                         <td school={{item.table.school.pk}} table={{item.table.pk}} data>
-                          <input type="number" class="form-control bright" value={{item.quantity}} onchange="update_vote({{item.pk}}, this)">
+                          <input type="number" class="form-control bright" value={{item.quantity}} onchange="update_vote({{item.pk}}, {{item.table.school.pk}}, {{item.table.pk}}, this)">
                         </td>
                       {% endfor %}
                     </tr>
@@ -179,20 +179,45 @@
     
     var token = '{{csrf_token}}';
     
-    function update_vote( id, obj ) {
-      $.ajax({
-            type: 'POST',
-            headers: { "X-CSRFToken": token },
-            url : "/update_vote/",
-            data:{ 'pk':id, 'qty': obj.value },
-            cache: false,
-            success: function(data){
-                obj.setAttribute("saved", "");
-            },
-            fail: function (data) {
-                console.log("Error: " + data);
-            }                
+    function update_vote( id, school, table, obj ) {
+      var total = 0;
+      $('td[school="'+school+'"][table="'+table+'"]').each(function(i, el){
+        total += parseInt($(this).find('input').val());
       });
+      var sel = document.getElementById('table-select');
+      var selected = sel.options[sel.selectedIndex];
+      var qty_el = selected.getAttribute('qty_el');
+
+      if (total <= qty_el){
+        $.ajax({
+              type: 'POST',
+              headers: { "X-CSRFToken": token },
+              url : "/update_vote/",
+              data:{ 'pk':id, 'qty': obj.value },
+              cache: false,
+              success: function(data){
+                  obj.setAttribute("saved", "");
+              },
+              error: function(xhr, status, error){
+                  alert('Error - Algo salió mal en el Servidor');
+                  obj.value=0;
+              }             
+        });
+      }else{
+        $.confirm({
+          title: 'Error',
+          content: 'La cantidad ingresada supera la cantidad de electores de la mesa',
+          type: 'red',
+          typeAnimated: true,
+          buttons: {
+              ok: {
+                  text: 'Aceptar',
+                  btnClass: 'btn-red',
+              }
+          }
+        });
+        obj.value=0;
+      }
     }
 
     function close_table() {
