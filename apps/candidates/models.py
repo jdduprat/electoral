@@ -28,6 +28,10 @@ class Party(models.Model):
     def __str__(self):
         return self.name
     
+    def __charge_order(self):
+        return '%s %s' % (self.order, self.name)
+    charge_order = property(__charge_order)
+
     class Meta:
         verbose_name = 'partido'
         verbose_name_plural = 'partidos'
@@ -68,6 +72,10 @@ class ElectoralList(models.Model):
     
     def __str__(self):
         return self.name + ' - ' + self.head
+
+    def __charge_order(self):
+        return '%s %s' % (self.order, self.name)
+    charge_order = property(__charge_order)
     
     class Meta:
         verbose_name = 'lista'
