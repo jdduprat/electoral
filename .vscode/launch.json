@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "stopOnEntry": false,
-            "pythonPath": "C:\\Users\\jd_du\\Documents\\Desarrollos\\electoral\\vele\\Scripts\\python.exe",
+            "pythonPath": "C:\\Desarrollos\\electoral\\vele\\Scripts\\python.exe",
             "program": "${workspaceFolder}\\manage.py",
             "args": [
                 "runserver",

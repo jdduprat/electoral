@@ -90,9 +90,10 @@ WSGI_APPLICATION = 'electoral.wsgi.application'
 DATABASES = {
     'default': {        
         'ENGINE': 'django.db.backends.postgresql_psycopg2',       
-        'NAME': 'electoral',
+        'NAME': 'electoral_prod',
         'USER': 'postgres',
-        'PASSWORD': 'asd846*',
+        #'PASSWORD': 'asd846*',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '',
         'DEFAULT_CHARSET': 'utf-8',
@@ -132,7 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS =  (os.path.join(os.path.dirname(BASE_DIR), "static"), 'C:/Users/jd_du/Documents/Desarrollos/electoral/static')
+STATICFILES_DIRS =  (os.path.join(os.path.dirname(BASE_DIR), "static"), 'C:/Desarrollos/electoral/static')
 
 #JET_SIDE_MENU_COMPACT = True
 
