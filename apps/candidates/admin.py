@@ -72,20 +72,20 @@ uncheck.short_description = "Quitar Vigencia"
 
 
 class PartyAdmin(admin.ModelAdmin):
-    list_display = ['name', 'address', 'city', 'color']
+    list_display = ['name', 'address', 'city', 'color', 'order']
     list_filter = ['city']
-    fields= ['name', 'address', 'city', 'color']
+    fields= ['name', 'address', 'city', 'color', 'order']
 
 
 class ElectoralListAdmin(admin.ModelAdmin):
-    list_display = ['name', 'party', 'current', 'head']
+    list_display = ['name', 'party', 'current', 'head', 'order']
     list_filter = ['party', 'head']
-    fields = ['name', 'party', 'current', 'head']
+    fields = ['name', 'party', 'current', 'head', 'order']
     actions = [check, uncheck,]
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'order']
+    list_display = ['name', 'order'] 
     list_filter = []
     fields= ['name', 'order']
 

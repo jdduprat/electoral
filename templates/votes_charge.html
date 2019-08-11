@@ -83,7 +83,7 @@
                   <tr>
                     {% for c in categories %}
                       <th>
-                        {{c.name}} ({{c.order}})
+                        {{c.name}}
                       </th>
                     {%endfor%}
                   </tr>
@@ -103,9 +103,6 @@
                   </tr>
                   {%endfor%} {% endcomment %}
                   
-                  <!--script>
-                    console.log('{{categories}}');
-                  </script-->  
                   {% regroup votes by electoral_list as category_votes %}
                   {% for cv in category_votes %} 
                     <tr>

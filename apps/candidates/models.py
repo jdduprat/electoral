@@ -23,6 +23,7 @@ class Party(models.Model):
     address = models.CharField(verbose_name=u'Dirección', blank=False, null=False, max_length=80)
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=False, null=True, verbose_name='Ciudad')
     color = ColorField(default='#FF0000')
+    order = models.IntegerField(verbose_name=u'Orden de Carga', blank=False, null=False, default=0)
 
     def __str__(self):
         return self.name
@@ -30,6 +31,7 @@ class Party(models.Model):
     class Meta:
         verbose_name = 'partido'
         verbose_name_plural = 'partidos'
+        ordering = ['order', 'name']
 
 
 class Election(models.Model):
@@ -62,6 +64,7 @@ class ElectoralList(models.Model):
                     help_text="Si está activado este campo, los votos de esta lista sumarizarán en los reportes" +
                              "al partido con mayor cantidad de Votos")
     head = models.CharField(verbose_name=u'Cabecera', blank=False, null=False, max_length=80, default='')
+    order = models.IntegerField(verbose_name=u'Orden de Carga', blank=False, null=False, default=0)
     
     def __str__(self):
         return self.name + ' - ' + self.head
@@ -69,4 +72,5 @@ class ElectoralList(models.Model):
     class Meta:
         verbose_name = 'lista'
         verbose_name_plural = 'listas'
+        ordering = ['order', 'name']
 
