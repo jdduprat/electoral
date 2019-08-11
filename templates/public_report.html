@@ -257,8 +257,6 @@
         }else{        
           votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(3, 99) + ' - ' + name);
         }
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 5) + ' - ' + name);
-        votes_per_party_data[c].push('{{v.quantity__sum}}');
         color = '{{v.electoral_list__party__color}}';
         colors_party[c].push(color);
         colors_border_party[c].push(color); 
