@@ -270,10 +270,11 @@
       var name = '{{ v.electoral_list__head }}'; 
       var party_nro = '{{v.electoral_list__party}}';
       //name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
-      if (name.length == 0){
+      console.log(party_nro + '-'+name.length + '-' + name);
+      if (name.length === 0){
         votes_per_party_labels[c].push(party_nro.substr(0, name.indexOf("-")) + '{{v.electoral_list__name}}');
       }else{        
-        votes_per_party_labels[c].push(party_nro.substr(0, name.indexOf("-")) + '{{v.electoral_list__name}}'.substr(3, 7) + ' - ' + name);
+        votes_per_party_labels[c].push(party_nro.substr(0, name.indexOf("-")) + '{{v.electoral_list__name}}'.substr(3, 15) + ' - ' + name);
       }
       votes_per_party_data[c].push('{{v.quantity__sum}}');
       color = '{{v.electoral_list__party__color}}';
