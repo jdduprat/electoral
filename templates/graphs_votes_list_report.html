@@ -270,7 +270,6 @@
       var name = '{{ v.electoral_list__head }}'; 
       var party_nro = '{{v.electoral_list__party}}';
       //name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
-      console.log(party_nro + '-'+name.length + '-' + name);
       if (name.length === 1){
         votes_per_party_labels[c].push(party_nro.substr(0, name.indexOf("-")) + '{{v.electoral_list__name}}');
       }else{        
