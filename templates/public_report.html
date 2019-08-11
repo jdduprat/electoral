@@ -251,7 +251,12 @@
           colors_border_party[c] = [];
         }   
         var name = '{{ v.electoral_list__head }}'; 
-        name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
+        //name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
+        if (name.length <= 1){
+          votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(3, 99));
+        }else{        
+          votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(3, 99) + ' - ' + name);
+        }
         votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 5) + ' - ' + name);
         votes_per_party_data[c].push('{{v.quantity__sum}}');
         color = '{{v.electoral_list__party__color}}';
