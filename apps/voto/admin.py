@@ -225,7 +225,7 @@ class VotoGraphsAdmin(admin.ModelAdmin):
             return response
 
         election = q['election__id__exact']
-        if 'election__id__exact' in q:
+        if election:
             election = Election.objects.get(pk=q['election__id__exact'])
 
         votes = Voto.objects.filter(election=election)
