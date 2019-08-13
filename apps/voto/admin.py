@@ -204,9 +204,10 @@ class VotoGraphsAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         q = request.GET.copy()
 
-        if not 'election__id__exact' in q:             
-            election = Election.objects.get(current=True)
-            if not election:
+        if not 'election__id__exact' in q:   
+            try:          
+                election = Election.objects.get(current=True)
+            except Election.DoesNotExist:
                 election = Election.objects.all().last()
 
             q['election__id__exact'] = str(election.pk)
