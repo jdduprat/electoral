@@ -50,12 +50,12 @@ class ElectionAdmin(admin.ModelAdmin):
 
 
 def check(self, request, queryset):
-        rows_updated = queryset.update(current=True)
-        if rows_updated == 1:
-            message_bit = "1 lista fue"
-        else:
-            message_bit = "%s listas fueron" % rows_updated
-        self.message_user(request, "%s marcada/s como vigente/s" % message_bit)
+    rows_updated = queryset.update(current=True)
+    if rows_updated == 1:
+        message_bit = "1 lista fue"
+    else:
+        message_bit = "%s listas fueron" % rows_updated
+    self.message_user(request, "%s marcada/s como vigente/s" % message_bit)
 
 check.short_description = "Marcar como Vigente"
 

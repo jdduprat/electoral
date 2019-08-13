@@ -21,6 +21,7 @@ class CustomUserAdmin(UserAdmin):
     inlines = (UsuarioInline, SchoolInline)
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_dni', 'get_tel')
     list_select_related = ('usuario', )
+    actions = (active, unactive)
 
     def get_dni(self, instance):
             return instance.usuario.dni
@@ -35,6 +36,26 @@ class CustomUserAdmin(UserAdmin):
             return list()
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
+
+def active(self, request, queryset):
+    rows_updated = queryset.update(is_active=True)
+    if rows_updated == 1:
+        message_bit = "1 usuario fue activado" 
+    else:
+        message_bit = "%s usuarios fueron activados" % rows_updated
+    self.message_user(request, message_bit)
+
+active.short_description = "Activar los usuarios seleccionados"
+
+def unactive(self, request, queryset):
+    rows_updated = queryset.update(is_active=False)
+    if rows_updated == 1:
+        message_bit = "1 usuario fue desactivado" 
+    else:
+        message_bit = "%s usuarios fueron desactivados" % rows_updated
+    self.message_user(request, message_bit)
+
+unactive.short_description = "Desactivar los usuarios seleccionados"
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
