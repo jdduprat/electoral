@@ -224,7 +224,9 @@ class VotoGraphsAdmin(admin.ModelAdmin):
             # no context_data.
             return response
 
-        election = Election.objects.get(pk=q['election__id__exact'])
+        election = q['election__id__exact']
+        if 'election__id__exact' in q:
+            election = Election.objects.get(pk=q['election__id__exact'])
 
         votes = Voto.objects.filter(election=election)
         other_votes = Voto.objects.filter(election=election, electoral_list__party__isnull=True)
