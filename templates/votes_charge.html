@@ -116,6 +116,18 @@
                     </tr>
                   {% endfor %}
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="2" data-valign="middle">
+                      Totales:
+                    </td>
+                    {% for c in categories %}
+                      <td id=foot-{{c.pk}} data-valign="middle">
+                        0
+                      </td>
+                    {%endfor%}
+                  </tr>
+                </tfoot>
               </table>
             </div>                      
           </div>
@@ -172,6 +184,13 @@
 
       $('#save-btn').on('click', update_all);
       filter_school();    
+      
+      /*var total = 0;
+      $("input").first().change();
+      $('td[school="'+school+'"][table="'+table+'"][category="'+category+'"]').each(function(i, el){
+        total += parseInt($(this).find('input').val());
+        $('#foot-'+category).val(total);
+      });*/      
     });
     
     var token = '{{csrf_token}}';
@@ -197,6 +216,7 @@
               cache: false,
               success: function(data){
                   obj.setAttribute("saved", "");
+                  $('#foot-'+category).html(total);
               },
               error: function(xhr, status, error){
                   alert('Error - Algo salió mal en el Servidor');

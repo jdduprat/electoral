@@ -68,12 +68,16 @@ from django.db.models import Count, Sum
 def votesChart(request):
     context={}
 
+    election = Election.objects.filter(current=True).last()
+    if not election:
+        return render(request, 'manteinance.html', context)
+
     cat_filter = Category.objects.filter(election__current=True).first()
     votes = Voto.objects.filter(election__current=True)
     other_votes = Voto.objects.filter(election__current=True, electoral_list__party__isnull=True)
 
-    context['election'] = Election.objects.filter(current=True).last()
-    context['categories'] = Category.objects.filter(election__current=True).order_by('order')
+    context['election'] = election
+    context['categories'] = Category.objects.filter(election__current=True).order_by('order_reports')
     context['votes_per_party'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__party__name', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__party__name')
     context['other_votes'] = other_votes.values('electoral_list__name').annotate(Sum('quantity'))
     context['other_votes_bycat'] = other_votes.values('category__pk', 'electoral_list__name').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__name')
