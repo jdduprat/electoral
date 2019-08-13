@@ -25,7 +25,7 @@
 {% block result_list %}
 <div class="content-i col-sm-6" style="margin: 0 auto;">
   <div class="content-box">
-    <div class="col-sm-12">
+      <div class="col-sm-12">
         <div class='element-wrapper'>
           <h6 class="element-header">Resultados Parciales</h6> 
           <h6 style="text-align: center;">Elecciones {{election.description}}</h6>
@@ -104,8 +104,19 @@
 <script src="{% static 'mines/bower_components/datatables.net/js/jquery.dataTables.js'%}"></script>
 <script>
   $(document).ready(function(){
-    setTimeout(function(){location.reload()}, 20000);
+    time_start = 0;    
+    time_start = setTimeout(function(){location.reload()}, 20000);
   });
+
+  function startStop(){
+    if (time_start) {
+      clearTimeout(timer);
+      $('#btn').html('Stop Refresh');
+    }else{
+      time_start = setTimeout(function(){location.reload()}, 20000);
+      $('#refresh').html('Auto-Refresh');
+    }
+  }
 
   var votes_per_party_labels = [];   
   var votes_per_party_data = [];   

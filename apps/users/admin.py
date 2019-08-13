@@ -31,7 +31,7 @@ active.short_description = "Activar los usuarios seleccionados"
 def unactive(self, request, queryset):
     rows_updated = queryset.update(is_active=False)
     if rows_updated == 1:
-        message_bit = "1 usuario fue desactivado" 
+        message_bit = "1 usuario fue desactivado"
     else:
         message_bit = "%s usuarios fueron desactivados" % rows_updated
     self.message_user(request, message_bit)
@@ -41,21 +41,22 @@ unactive.short_description = "Desactivar los usuarios seleccionados"
 
 class CustomUserAdmin(UserAdmin):
     inlines = (UsuarioInline, SchoolInline)
+    list_filter = ('groups', 'is_active', 'is_staff', 'school') 
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_dni', 'get_tel')
     list_select_related = ('usuario', )
     actions = (active, unactive)
 
     def get_dni(self, instance):
-            return instance.usuario.dni
+            return instance.usuario.dni 
     get_dni.short_description = 'DNI'
 
     def get_tel(self, instance):
             return instance.usuario.tel
     get_tel.short_description = u'Teléfono'
 
-    def get_inline_instances(self, request, obj=None):
+    def get_inline_instances(self, request, obj=None): 
         if not obj:
-            return list()
+            return list() 
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
 admin.site.unregister(User)
