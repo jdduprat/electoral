@@ -205,7 +205,11 @@ class VotoGraphsAdmin(admin.ModelAdmin):
         q = request.GET.copy()
 
         if not 'election__id__exact' in q:             
-            q['election__id__exact'] = str(Election.objects.get(current=True).pk)
+            election = Election.objects.get(current=True)
+            if not election:
+                election = Election.objects.all().last()
+
+            q['election__id__exact'] = str(election.pk)
 
         request.GET = q
         request.META['QUERY_STRING'] = request.GET.urlencode()
@@ -224,9 +228,7 @@ class VotoGraphsAdmin(admin.ModelAdmin):
             # no context_data.
             return response
 
-        election = q['election__id__exact']
-        #if election:
-        #    election = Election.objects.get(pk=q['election__id__exact'])
+        election = Election.objects.get(pk=q['election__id__exact'])
 
         votes = Voto.objects.filter(election=election)
         other_votes = Voto.objects.filter(election=election, electoral_list__party__isnull=True)
