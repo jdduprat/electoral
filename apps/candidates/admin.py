@@ -30,14 +30,14 @@ create_votes.short_description = "Crear Registros para Conteo de Votos"
 
 def close_all_tables(self, request, queryset):
     for obj in queryset:
-        Table.objects.filter(election=obj).update(closed=True, closed_by=request.user)
+        Table.objects.filter(election=obj, closed=False).update(closed=True, closed_by=request.user)
 
 close_all_tables.short_description = "Cerrar todas las mesas"
 
 
 def open_all_tables(self, request, queryset):
     for obj in queryset:
-        Table.objects.filter(election=obj).update(closed=False, closed_by=None, reopen_by=request.user)
+        Table.objects.filter(election=obj, closed=True).update(closed=False, closed_by=None, reopen_by=request.user)
 
 open_all_tables.short_description = "Abrir todas las mesas"
 

@@ -167,7 +167,7 @@
         var c = selected.getAttribute('closed');
   
         if ( c == 'True' ){
-          $('#table-span').find('span').html('Mesa CERRADA');
+          $('#table-span').find('span').html('<strong>Mesa CERRADA</strong>');
         } else {
           $('#table-span').find('span').html('');
         }
@@ -247,24 +247,51 @@
     function close_table() {
       table_id = $('#table-select').val();
       var mensaje;
-      var opcion = confirm("¿Finalizó la carga? ¿Desea cerrar la mesa seleccionada?");
-      if (opcion == true) {
-        $.ajax({
-            type: 'POST',
-            headers: { "X-CSRFToken": token },
-            url : "/close_table/",
-            data:{ 'pk': table_id },
-            cache: false,
-            success: function(data){
-                console.log("mesa cerrada " + table_id);
-            },
-            fail: function (data) {
-                console.log("Error: " + data);
-            }                
-        });
-      } else {
-         //console.log("Cancela");
-      }      
+      $.confirm({
+                  title: '¡Atención!',
+                  content: '¿Esta seguro que desea cerrar la mesa '+table_id+'?',
+                  type: 'orange',
+                  typeAnimated: true,
+                  escapeKey: 'ok',
+                  buttons: {
+                    ok: {
+                        text: 'Aceptar',
+                        btnClass: 'btn-orange',
+                        action: function(){
+                          $.ajax({
+                            type: 'POST',
+                            headers: { "X-CSRFToken": token },
+                            url : "/close_table/",
+                            data:{ 'pk': table_id },
+                            cache: false,
+                            success: function(data){
+                                $('#table-span').find('span').html('<strong>Mesa CERRADA</strong>');
+                                $.confirm({
+                                  title: 'Mesa Cerrada',
+                                  content: 'La mesa '+table_id+' se ha cerrado exitosamente',
+                                  type: 'green',
+                                  typeAnimated: true,
+                                  escapeKey: 'ok',
+                                  buttons: {
+                                    ok: {
+                                        text: 'Aceptar',
+                                        btnClass: 'btn-green'
+                                    }
+                                  }
+                                });
+                            },
+                            fail: function (data) {
+                                console.log("Error: " + data);
+                            }                
+                        });
+                      }
+                    },
+                    cancel: {
+                        text: 'Cancelar'
+                    }
+                  }
+                });
+          
     }
 </script>
 
