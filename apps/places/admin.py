@@ -23,11 +23,21 @@ class UpdateActionForm(ActionForm):
 
 
 class SchoolAdmin(admin.ModelAdmin):    
-    list_display = ['name', 'address', 'city']
+    list_display = ['name', 'address', 'city', 'get_tables_total', 'get_users_assigned']
     list_filter = ['city__department__province', 'city']
     fields= ['name', 'address', 'city', 'assigned_to']
     #actions = [to_assign, ]
     #action_form = UpdateActionForm
+    
+    def get_users_assigned(self, obj):
+        return ", ".join([u.username for u in obj.assigned_to.all()])
+
+    get_users_assigned.short_description = 'USUARIO/S'
+
+    def get_tables_total(self, obj):
+        return Table.objects.filter(school=obj).count()
+    
+    get_tables_total.short_description = 'MESAS'
 
 #    def get_queryset(self, request):
 #        qs = super(SchoolAdmin, self).get_queryset(request)
@@ -36,6 +46,7 @@ class SchoolAdmin(admin.ModelAdmin):
 #            return qs.filter(assigned_to=request.user)
 #        else:
 #            return qs
+
 
 class TableAdmin(admin.ModelAdmin): 
     list_display = ['name', 'school', 'elctors_qty', 'closed_by', 'reopen_by']
