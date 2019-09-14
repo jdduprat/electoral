@@ -90,6 +90,7 @@ WSGI_APPLICATION = 'electoral.wsgi.application'
 DATABASES = {
     'default': {        
         'ENGINE': 'django.db.backends.postgresql_psycopg2',       
+        #'NAME': 'electoral_prod',
         'NAME': 'electoral',
         'USER': 'postgres',
         'PASSWORD': 'asd846*',
@@ -171,5 +172,5 @@ JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
         {'name': 'voto.votographs'},
         {'label': 'Ir a Reporte Público', 'url': '/', 'url_blank': True},
     ]},
-    {'label': 'Ayuda', 'url': '/static/manual.pdf', 'url_blank': True},
+    {'name': 'Ayuda', 'url': '/static/docs/user_manual.pdf', 'url_blank': True},
 ]
