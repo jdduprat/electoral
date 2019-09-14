@@ -93,6 +93,7 @@ DATABASES = {
         'NAME': 'electoral',
         'USER': 'postgres',
         'PASSWORD': 'asd846*',
+        #'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '',
         'DEFAULT_CHARSET': 'utf-8',
@@ -132,7 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS =  (os.path.join(os.path.dirname(BASE_DIR), "static"), 'C:/Users/jd_du/Documents/Desarrollos/electoral/static')
+STATICFILES_DIRS =  (os.path.join(os.path.dirname(BASE_DIR), "static"), 'C:/Desarrollos/electoral/static')
 
 #JET_SIDE_MENU_COMPACT = True
 
@@ -156,6 +157,7 @@ JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
     ]},
     {'label': 'Ciudades', 'items': [
         {'name': 'cities.city'},
+        {'name': 'cities.department'},
         {'name': 'cities.province'},
     ]},
     {'label': 'Escuelas', 'items': [
