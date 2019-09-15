@@ -80,12 +80,16 @@ class CopyActionForm(ActionForm):
 
 
 class ElectionAdmin(admin.ModelAdmin):
-    list_display = ['description', 'date', 'year', 'current']
+    list_display = ['description', 'date', 'year', 'current', 'get_tables_total']
     list_filter = ['date', 'year', 'current']
     fields= ['description', 'date', 'year', 'current', 'categories', 'parties']
     actions = [create_votes, close_all_tables, open_all_tables, copy_election]
     action_form = CopyActionForm
 
+    def get_tables_total(self, obj):
+        return Table.objects.filter(election=obj).count()
+    
+    get_tables_total.short_description = 'MESAS'
 
 def check(self, request, queryset):
     rows_updated = queryset.update(current=True)

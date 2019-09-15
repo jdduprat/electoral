@@ -73,7 +73,7 @@ unactive.short_description = "Desactivar los usuarios seleccionados"
 class CustomUserAdmin(UserAdmin):
     inlines = (UsuarioInline, SchoolInline)
     list_filter = ('groups', 'is_active', 'is_staff', 'school') 
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_dni', 'get_tel')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_dni', 'get_tel', 'get_schools_assigned')
     list_select_related = ('usuario', )
     actions = (active, unactive, resetPassword, change_password)
     action_form = UpdateActionForm
@@ -90,6 +90,11 @@ class CustomUserAdmin(UserAdmin):
         if not obj:
             return list() 
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
+    
+    def get_schools_assigned(self, obj):
+        return " // ".join([s.name for s in School.objects.filter(assigned_to=obj)])
+
+    get_schools_assigned.short_description = 'ESCUELA/S'
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
