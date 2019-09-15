@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import *
 from apps.voto.models import Voto
 from apps.places.models import Table
+from django.contrib.admin.helpers import ActionForm
+from django import forms
 
 def create_votes(self, request, queryset):
     for obj in queryset:
@@ -42,11 +44,47 @@ def open_all_tables(self, request, queryset):
 open_all_tables.short_description = "Abrir todas las mesas"
 
 
+def copy_election(self, request, queryset):
+    if queryset.count() > 1:
+        self.message_user(request, "Debe serleccionar una única Elección")
+    else:
+        for obj in queryset:
+            cat = request.POST['copy_categories']
+            par = request.POST['copy_parties']
+            
+            new_election = Election(description = 'Copia - ' + obj.description, date = obj.date, year = obj.year, current=False)
+            new_election.save()
+
+            if cat:
+                categories = Category.objects.filter(election=obj)
+                new_election.categories.set(categories)
+            if par:
+                parties = Party.objects.filter(election=obj)
+                new_election.parties.set(parties)
+                
+            new_election.save()
+        
+        self.message_user(request, "Elección creada: " + 'Copia - ' + obj.description)
+
+copy_election.short_description = "Copiar Elección"
+
+
+class CopyActionForm(ActionForm):
+    copy_categories = forms.BooleanField(label='Copiar: Categorías')
+    copy_parties = forms.BooleanField(label='Partidos')
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['copy_categories'].initial  = True
+        self.fields['copy_parties'].initial  = True
+
+
 class ElectionAdmin(admin.ModelAdmin):
     list_display = ['description', 'date', 'year', 'current']
     list_filter = ['date', 'year', 'current']
     fields= ['description', 'date', 'year', 'current', 'categories', 'parties']
-    actions = [create_votes, close_all_tables, open_all_tables, ]
+    actions = [create_votes, close_all_tables, open_all_tables, copy_election]
+    action_form = CopyActionForm
 
 
 def check(self, request, queryset):
@@ -61,12 +99,12 @@ check.short_description = "Marcar como Vigente"
 
 
 def uncheck(self, request, queryset):
-        rows_updated = queryset.update(current=False)
-        if rows_updated == 1:
-            message_bit = "1 lista fue"
-        else:
-            message_bit = "%s listas fueron" % rows_updated
-        self.message_user(request, "%s marcada/s como NO vigente/s" % message_bit)
+    rows_updated = queryset.update(current=False)
+    if rows_updated == 1:
+        message_bit = "1 lista fue"
+    else:
+        message_bit = "%s listas fueron" % rows_updated
+    self.message_user(request, "%s marcada/s como NO vigente/s" % message_bit)
 
 uncheck.short_description = "Quitar Vigencia"
 
