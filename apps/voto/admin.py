@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Voto, VotoSummary, VotoCharge, VotoGraphs
+from .models import Voto, VotoSummary, VotoCharge, VotoGraphs, VotoStats
 from django.db.models import Count, Sum, Min, Max, DateField
 from django.db.models.functions import Trunc
 from jet.filters import RelatedFieldAjaxListFilter
@@ -115,7 +115,7 @@ class LoadContractSummaryAdmin(admin.ModelAdmin):
 
 
 from apps.candidates.models import Category, Election
-from apps.places.models import Table
+from apps.places.models import Table, School
 
 @admin.register(VotoCharge)
 class LoadVotoChargeAdmin(admin.ModelAdmin):
@@ -252,4 +252,82 @@ class VotoGraphsAdmin(admin.ModelAdmin):
         response.context_data['totals_electors'] = tables.aggregate(Sum('elctors_qty'))
         response.context_data['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))
 
+        return response
+
+
+@admin.register(VotoStats)
+class VotoGraphsAdmin(admin.ModelAdmin):
+    change_list_template = 'votes_stats.html'
+
+    list_filter = (
+        'election', 
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_module_permission(self, request):
+        return True
+
+    def changelist_view(self, request, extra_context=None):
+        q = request.GET.copy()
+
+        if not 'election__id__exact' in q:   
+            try:          
+                election = Election.objects.get(current=True)
+            except Election.DoesNotExist:
+                election = Election.objects.all().last()
+
+            q['election__id__exact'] = str(election.pk)
+
+        request.GET = q
+        request.META['QUERY_STRING'] = request.GET.urlencode()
+
+        response = super().changelist_view(request, extra_context=extra_context)
+
+        # self.get_queryset would return the base queryset. ChangeList
+        # apply the filters from the request so this is the only way to
+        # get the filtered queryset.
+
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            # When an invalid filter is used django will redirect. In this
+            # case the response is an http redirect response and so it has
+            # no context_data.
+            return response
+
+        election = Election.objects.get(pk=q['election__id__exact'])
+
+        votes = Voto.objects.filter(election=election)
+        other_votes = Voto.objects.filter(election=election, electoral_list__party__isnull=True)
+        
+        tables = Table.objects.filter(election=election) 
+
+        cat_filter = Category.objects.filter(election=election).first()
+
+        response.context_data['election'] = election
+        response.context_data['totals_electors'] = tables.aggregate(Sum('elctors_qty'))
+        response.context_data['totals_votes'] = votes.filter(category__pk=cat_filter.pk).aggregate(Sum('quantity'))
+        response.context_data['qty_tables_total'] = tables.count()
+        response.context_data['qty_tables_closed'] = tables.exclude(closed=False).count()
+
+        response.context_data['school_more_closed'] = School.objects.filter(table__election=election, table__closed=True).annotate(qty_closed=Count('table__closed')).order_by('-qty_closed')[0]
+
+        votes_by_cat = votes.values('category__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('category__name', '-quantity')
+        
+        #category_name = ''
+        #for v in list(votes_by_cat):
+        #    if category_name == v['category__name']:
+        #        votes_by_cat.exclude(category__name=v['category__name'], electoral_list__head=v['electoral_list__head'])
+            
+        #    category_name = v['category__name']
+
+        response.context_data['totals_votes_by_cat'] = votes_by_cat
         return response

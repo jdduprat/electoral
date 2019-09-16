@@ -170,6 +170,7 @@ JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
         {'name': 'voto.votosummary'},
         {'name': 'voto.votocharge'},
         {'name': 'voto.votographs'},
+        {'name': 'voto.votostats'},
         {'label': 'Ir a Reporte Público', 'url': '/', 'url_blank': True},
     ]},
     {'label': 'Manual de Usuario', 'url': '/static/docs/user_manual.pdf', 'url_blank': True},

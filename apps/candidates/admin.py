@@ -51,6 +51,7 @@ def copy_election(self, request, queryset):
         for obj in queryset:
             cat = request.POST['copy_categories']
             par = request.POST['copy_parties']
+            tab = request.POST['copy_tables']
             
             new_election = Election(description = 'Copia - ' + obj.description, date = obj.date, year = obj.year, current=False)
             new_election.save()
@@ -60,8 +61,13 @@ def copy_election(self, request, queryset):
                 new_election.categories.set(categories)
             if par:
                 parties = Party.objects.filter(election=obj)
-                new_election.parties.set(parties)
-                
+                new_election.parties.set(parties)           
+            if tab:
+                tables = Table.objects.filter(election=obj)
+                for t in tables:
+                    t.election.set(new_election)
+                    t.save()
+
             new_election.save()
         
         self.message_user(request, "Elección creada: " + 'Copia - ' + obj.description)
@@ -72,11 +78,13 @@ copy_election.short_description = "Copiar Elección"
 class CopyActionForm(ActionForm):
     copy_categories = forms.BooleanField(label='Copiar: Categorías')
     copy_parties = forms.BooleanField(label='Partidos')
+    copy_tables = forms.BooleanField(label='Mesas')
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['copy_categories'].initial  = True
         self.fields['copy_parties'].initial  = True
+        self.fields['copy_tables'].initial  = True
 
 
 class ElectionAdmin(admin.ModelAdmin):
