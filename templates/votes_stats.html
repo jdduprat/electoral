@@ -21,42 +21,40 @@
 {% endblock %}
  
 {% block result_list %}
-<div class="content-i col-sm-6" style="margin: 0 auto;">
+<div class="content-i col-sm-8" style="margin: 0 auto;">
   <div class="content-box">
       <div class="col-sm-12">
         <div class='element-wrapper'>
           <h6 class="element-header">Resultados Parciales</h6> 
           <h6 style="text-align: center;">Elecciones {{election.description}}</h6>
-          <div class="row pt-4">            
+          <div class="tab-content">
             <div class="water-mark"></div>
-            <div class="col-sm-6">
-              <div class="element-box-tp">                  
-                <div class="row">
-                    <div class="label">Electores Inscriptos: </div>
-                    <div class="value">{{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}} </div>
-                </div>                         
-                <div class="row">
-                    <div class="label">Votos Emitidos: </div>
-                    <div class="value">{{totals_votes.quantity__sum|default_if_none:0|intcomma}} de {{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}} // {{ totals_votes.quantity__sum | default:0 | percentof:totals_electors.elctors_qty__sum }} </div>
-                </div>      
-                <div class="row">
-                    <div class="label">Mesas Escrutadas: </div>
-                    <div class="value"> {{qty_tables_closed}} de {{qty_tables_total}} // {{ qty_tables_closed | default:0 | percentof:qty_tables_total }} </div>
-                </div>            
-                <div class="row">
-                    <div class="label">Escuelas con más mesas cerradas: </div>
-                    <div class="value">{{school_more_closed.name}} // {{school_more_closed.qty_closed}} mesas cerradas</div>
-                </div>      
-                {% for v in totals_votes_by_cat %}                        
-                  <div class="row">
-                      <div class="label">{{ v.category__name }}: </div>
-                      <div class="label">{{ v.electoral_list__head }} </div>
-                      <div class="value">{{ v.quantity__sum | default:0 | percentof:totals_votes.quantity__sum }}</div>
-                  </div> 
-                {% endfor %}                     
-              </div>
+            <div class="tab-pane active" id="tab_overview">
+                <div class="timed-activities padded">
+                    <div class="timed-activity">
+                        <div class="ta-record-w">
+                            <div class="ta-record">                                
+                                <div class="ta-activity">Electores Inscriptos: {{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}}</div>
+                            </div>
+                            <div class="ta-record">
+                                <div class="ta-activity">Votos Emitidos: {{totals_votes.quantity__sum|default_if_none:0|intcomma}} de {{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}} // {{ totals_votes.quantity__sum | default:0 | percentof:totals_electors.elctors_qty__sum }}</div>
+                            </div>
+                            <div class="ta-record">
+                                <div class="ta-activity">Mesas Escrutadas: {{qty_tables_closed}} de {{qty_tables_total}} // {{ qty_tables_closed | default:0 | percentof:qty_tables_total }}</div>
+                            </div>
+                            <div class="ta-record">
+                                <div class="ta-activity">Escuelas con más mesas cerradas: {{school_more_closed.name}} // {{school_more_closed.qty_closed}} mesas cerradas</div>
+                            </div>
+                        {% for v in totals_votes_by_cat %}     
+                            <div class="ta-record">
+                                <div class="ta-activity">{{ v }}</div>
+                            </div>
+                        {% endfor %}   
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div> <!--end row-->
+          </div> <!--tab-->
         </div>
     </div>
   </div>

@@ -322,12 +322,15 @@ class VotoGraphsAdmin(admin.ModelAdmin):
 
         votes_by_cat = votes.values('category__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('category__name', '-quantity')
         
-        #category_name = ''
-        #for v in list(votes_by_cat):
-        #    if category_name == v['category__name']:
-        #        votes_by_cat.exclude(category__name=v['category__name'], electoral_list__head=v['electoral_list__head'])
-            
-        #    category_name = v['category__name']
-
-        response.context_data['totals_votes_by_cat'] = votes_by_cat
+        category_name = ''
+        votes_by_cat_str = []
+        for v in list(votes_by_cat):
+            if category_name == v['category__name']:
+                votes_by_cat.exclude(category__name=v['category__name'], electoral_list__head=v['electoral_list__head'])
+            else:
+                perc = round(v['quantity__sum'] / response.context_data['totals_votes']['quantity__sum'] * 100, 0)
+                votes_by_cat_str.append(v['category__name'] + ': ' + v['electoral_list__head'] + ' // ' + str(perc) + '%')
+                category_name = v['category__name']
+        print(votes_by_cat_str)
+        response.context_data['totals_votes_by_cat'] = votes_by_cat_str
         return response
