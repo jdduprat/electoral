@@ -320,7 +320,7 @@ class VotoGraphsAdmin(admin.ModelAdmin):
 
         response.context_data['school_more_closed'] = School.objects.filter(table__election=election, table__closed=True).annotate(qty_closed=Count('table__closed')).order_by('-qty_closed')[0]
 
-        votes_by_cat = votes.values('category__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('category__name', '-quantity')
+        votes_by_cat = votes.values('category__name', 'electoral_list__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('category__name', '-quantity')
         
         category_name = ''
         votes_by_cat_str = []
@@ -329,8 +329,8 @@ class VotoGraphsAdmin(admin.ModelAdmin):
                 votes_by_cat.exclude(category__name=v['category__name'], electoral_list__head=v['electoral_list__head'])
             else:
                 perc = round(v['quantity__sum'] / response.context_data['totals_votes']['quantity__sum'] * 100, 0)
-                votes_by_cat_str.append(v['category__name'] + ': ' + v['electoral_list__head'] + ' // ' + str(perc) + '%')
+                votes_by_cat_str.append(v['category__name'] + ': ' + v['electoral_list__name'] + ' - ' + v['electoral_list__head'] + ' // ' + str(perc) + '%')
                 category_name = v['category__name']
-        print(votes_by_cat_str)
+        #print(votes_by_cat_str)
         response.context_data['totals_votes_by_cat'] = votes_by_cat_str
         return response

@@ -26,25 +26,28 @@
       <div class="col-sm-12">
         <div class='element-wrapper'>
           <h6 class="element-header">Resultados Parciales</h6> 
-          <h6 style="text-align: center;">Elecciones {{election.description}}</h6>
+          <h5 style="text-align: center;">Elecciones {{election.description}}</h5>
           <div class="tab-content">
             <div class="water-mark"></div>
             <div class="tab-pane active" id="tab_overview">
                 <div class="timed-activities padded">
                     <div class="timed-activity">
-                        <div class="ta-record-w">
-                            <div class="ta-record">                                
+                        <div class="ta-record-w">      
+                            <h6>Votantes</h6><br>                           
+                            <div class="ta-record">                           
                                 <div class="ta-activity">Electores Inscriptos: {{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}}</div>
                             </div>
                             <div class="ta-record">
                                 <div class="ta-activity">Votos Emitidos: {{totals_votes.quantity__sum|default_if_none:0|intcomma}} de {{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}} // {{ totals_votes.quantity__sum | default:0 | percentof:totals_electors.elctors_qty__sum }}</div>
-                            </div>
+                            </div>     
+                            <br><h6>Escuelas y Mesas</h6><br>
                             <div class="ta-record">
                                 <div class="ta-activity">Mesas Escrutadas: {{qty_tables_closed}} de {{qty_tables_total}} // {{ qty_tables_closed | default:0 | percentof:qty_tables_total }}</div>
                             </div>
                             <div class="ta-record">
                                 <div class="ta-activity">Escuelas con más mesas cerradas: {{school_more_closed.name}} // {{school_more_closed.qty_closed}} mesas cerradas</div>
-                            </div>
+                            </div>     
+                            <br><h6>Ganadores</h6><br>
                         {% for v in totals_votes_by_cat %}     
                             <div class="ta-record">
                                 <div class="ta-activity">{{ v }}</div>
@@ -62,6 +65,12 @@
 
 {% endblock %}
 
-
+{% block extra_js%}
+<script>
+    $(document).ready(function(){
+        setTimeout(function(){location.reload()}, 20000);
+    });
+</script>
+{% endblock %}
 
 {% block pagination %}{% endblock %}
