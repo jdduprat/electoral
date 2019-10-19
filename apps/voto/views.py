@@ -86,7 +86,7 @@ def votesChart(request):
 
     context['totals_votes'] = votes.filter(category__pk=cat_filter.pk).aggregate(Sum('quantity'))
     context['totals_positives'] = votes.filter(category__pk=cat_filter.pk).exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
-    context['totals_tables'] = Table.objects.filter(election__current=True, closed=True).count()
+    context['totals_tables'] = { 'closed': Table.objects.filter(election__current=True, closed=True).count(), 'total': Table.objects.filter(election__current=True).count(), 'pene':'pene'}
     context['totals_electors'] = Table.objects.filter(election__current=True).aggregate(Sum('elctors_qty'))
     context['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))
 

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% load humanize %}
+{% load mathtags %}
 
 {% block content %}
 <div class="content-i col-sm-8" style="margin: 0 auto;">
@@ -33,34 +34,46 @@
             <div class="col-sm-4">
               <div class="element-box-tp">                  
                 <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                  <a class="element-box el-tablo centered smaller" href="#">
                     <div class="label">Electores Inscriptos</div>
                     <div class="value">{{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}}</div>
                   </a>
                 </div>      
                 <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                  <a class="element-box el-tablo centered smaller" href="#">
                     <div class="label">Mesas Escrutadas</div>
-                    <div class="value">{{totals_tables}}</div>
+                    <div class="value">{{totals_tables.closed}} de {{totals_tables.total}}</div>
+                    <div class="font-weight-bold trending-up-basic">
+                      <span>{{totals_tables.closed | default:0 | percentof:totals_tables.total}}</span>
+                    </div>
                   </a>
                 </div>                     
                 <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                  <a class="element-box el-tablo centered smaller" href="#">
                     <div class="label">Votos Emitidos</div>
                     <div class="value">{{totals_votes.quantity__sum|default_if_none:0|intcomma}}</div>
+                    <div class="font-weight-bold trending-up-basic">
+                      <span>{{totals_votes.quantity__sum | default:0 | percentof:totals_electors.elctors_qty__sum}}</span>
+                    </div>
                   </a>
                 </div>                
                 <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                  <a class="element-box el-tablo centered smaller" href="#">
                     <div class="label">Votos Positivos</div>
                     <div class="value">{{totals_positives.quantity__sum|default_if_none:0|intcomma}}</div>
+                    <div class="font-weight-bold trending-up-basic">
+                      <span>{{totals_positives.quantity__sum | default:0 | percentof:totals_votes.quantity__sum}}</span>
+                    </div>
                   </a>
                 </div>      
                 {% for v in other_votes %}                        
                   <div class="col-sm-12">
-                    <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <a class="element-box el-tablo centered smaller" href="#">
                       <div class="label">{{v.electoral_list__name}}</div>
                       <div class="value">{{v.quantity__sum|default_if_none:0|intcomma}}</div>
+                      <div class="font-weight-bold trending-up-basic">
+                        <span>{{v.quantity__sum | default:0 | percentof:totals_votes.quantity__sum}}</span>
+                      </div>
                     </a>
                   </div> 
                 {% endfor %}                     
