@@ -25,9 +25,10 @@
                       <div class="col-sm-9">
                         <select class="form-control form-control-sm js-select2" id="school-select" style="width:100%">
                           {% for s in schools %}
-                            <option value="{{s.pk}}" class="school-change">{{s.name}}</option>
+                            <option value="{{s.pk}}" class="school-change" address="{{s.address}}">{{s.name}}</option>
                           {% endfor %}
-                        </select>         
+                        </select>  
+                        <span id="span_address">ii</span>       
                       </div>             
                     </div>              
                   </div> 
@@ -151,7 +152,9 @@
       $('#table-select').on('change', filter_table);
 
       function filter_school () {
-        school = $('#school-select').val();
+        school = $('#school-select').val();        
+        address = $('.school-change[value='+school+']').attr('address');
+        $('#span_address').html(address);
 
         $('#table-select option').hide();
         $('#table-select option[school="'+school+'"]').show();        
