@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import School, Table
 from django.contrib.admin.helpers import ActionForm
 from django import forms
+from django.utils.safestring import mark_safe
 #from apps.users.models import Usuario
 
 
@@ -23,9 +24,9 @@ class UpdateActionForm(ActionForm):
 
 
 class SchoolAdmin(admin.ModelAdmin):    
-    list_display = ['name', 'address', 'city', 'get_tables_total', 'get_users_assigned']
+    list_display = ['name', 'address', 'city', 'get_tables_total', 'get_users_assigned', 'show_gmap_url']
     list_filter = ['city__department__province', 'city']
-    fields= ['name', 'address', 'city', 'assigned_to']
+    fields= ['name', 'address', 'city', 'assigned_to', 'gmap_location']
     #actions = [to_assign, ]
     #action_form = UpdateActionForm
     
@@ -38,6 +39,13 @@ class SchoolAdmin(admin.ModelAdmin):
         return Table.objects.filter(school=obj).count()
     
     get_tables_total.short_description = 'MESAS'
+
+    def show_gmap_url(self, obj):
+        if obj.gmap_location is None:
+            url = '-'
+        else:
+            url = '<a href="%s" target="_blank">%s</a>' % (obj.gmap_location, '<i class="icon-pin"></i>')
+        return mark_safe(url)
 
 #    def get_queryset(self, request):
 #        qs = super(SchoolAdmin, self).get_queryset(request)

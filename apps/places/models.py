@@ -9,6 +9,7 @@ class School(models.Model):
     address = models.CharField(verbose_name=u'Dirección', blank=False, null=False, max_length=80)
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=False, null=True, verbose_name='Ciudad')
     assigned_to = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=False, verbose_name=u'Asignada a')
+    gmap_location = models.URLField(verbose_name=u'Ubicación', blank=True, null=True)
 
     def __str__(self):
         return self.name
