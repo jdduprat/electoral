@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'electoral.wsgi.application'
 DATABASES = {
     'default': {        
         'ENGINE': 'django.db.backends.postgresql_psycopg2',       
-        'NAME': 'electoral_prod',
-        #'NAME': 'electoral',
+        #'NAME': 'electoral_prod',
+        'NAME': 'electoral',
         'USER': 'postgres',
-        #'PASSWORD': 'asd846*',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'asd846*',
+        #'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '',
         'DEFAULT_CHARSET': 'utf-8',
