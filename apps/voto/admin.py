@@ -162,12 +162,16 @@ class LoadVotoChargeAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         q = request.GET.copy()
-
+        try:          
+            election = Election.objects.get(current=True)
+        except Election.DoesNotExist:
+            election = Election.objects.all().last()
+        
         if not 'election__id__exact' in q:             
-            q['election__id__exact'] = str(Election.objects.get(current=True).pk)
+            q['election__id__exact'] = str(election.pk)
 
         if not 'table__id__exact' in request.GET:    
-            q['table__id__exact'] = str(Table.objects.filter(election__current=True).first().pk)
+            q['table__id__exact'] = str(Table.objects.filter(election=election).first().pk)
 
         request.GET = q
         request.META['QUERY_STRING'] = request.GET.urlencode()
