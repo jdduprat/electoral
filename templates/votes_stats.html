@@ -18,11 +18,6 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-  <script>
-    $(document).ready(function(){
-        setTimeout(function(){location.reload()}, 20000);
-    });
-    </script>
 {% endblock %}
  
 {% block result_list %}
@@ -67,7 +62,11 @@
     </div>
   </div>
 </div>
-
+<script>
+    $(document).ready(function(){
+        setTimeout(function(){location.reload()}, 20000);
+    });
+</script>
 {% endblock %}
 
 {% block pagination %}{% endblock %}
