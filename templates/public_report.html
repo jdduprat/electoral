@@ -272,21 +272,9 @@
       }
         votes_per_party_data[c].push('{{v.quantity__sum}}');
         color = '{{v.electoral_list__party__color}}';
-        colors_party[c].push(color);
-        colors_border_party[c].push(color); 
-      {% endfor %}   
-
-      {% for v in other_votes_bylist %}  
-        c = parseInt('{{v.category__pk}}'); 
-        if (votes_per_party_labels[c] === undefined) {
-          votes_per_party_labels[c] = [];
-          votes_per_party_data[c] = [];
-          colors_party[c] = [];
-          colors_border_party[c] = [];
-        }    
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 15));
-        votes_per_party_data[c].push('{{v.quantity__sum}}');
-        color = "rgba(" + dynamicColors() + ", 0.7)";
+        if (color === 'None'){
+          color = "rgba(" + dynamicColors() + ", 0.7)";
+        }
         colors_party[c].push(color);
         colors_border_party[c].push(color); 
       {% endfor %}   
@@ -343,7 +331,7 @@
                           var data = dataset.data[index];    
                           //console.log(dataset);                  
                           var x_ = bar._model.x;
-                          if ( x_ < 300 ) {
+                          if ( x_ < 600 ) {
                             x_ += 30;
                             //ctx.fillStyle = "#000000";
                           }else{

@@ -7,7 +7,7 @@ from jet.filters import RelatedFieldAjaxListFilter
 @admin.register(Voto)
 class VotoAdmin(admin.ModelAdmin):
     list_display = ['election', 'get_school', 'table', 'category', 'electoral_list', 'quantity']
-    list_filter = ['election', 'table__school', 'table', 'category', 'electoral_list', 'quantity']
+    list_filter = ['election', 'table__school', 'table', 'category', 'electoral_list']
     fields= ['election', 'table', 'category', 'electoral_list', 'quantity']
 
     def get_school(self, obj):
@@ -25,7 +25,25 @@ class VotoAdmin(admin.ModelAdmin):
         # if not getattr(obj, 'created_by', None):            
             obj.created_by = request.user
         obj.save()
+"""
+    def changelist_view(self, request, extra_context=None):
+        q = request.GET.copy()
 
+        if 'election__id__exact' in q:             
+            pass #q['election__id__exact'] = str(Election.objects.get(current=True).pk)
+
+        if 'category__id__exact' in q:     
+            election = q['election__id__exact']
+            
+        request.GET = q
+        request.META['QUERY_STRING'] = request.GET.urlencode()
+        
+        response = super().changelist_view(request, extra_context=extra_context)
+        qs = response.context_data['cl'].queryset
+        
+        filters = response.context_data['cl'].filter_specs
+
+        return response """
 
 def get_next_in_date_hierarchy(request, date_hierarchy):
     if date_hierarchy + '__day' in request.GET:
@@ -241,14 +259,17 @@ class VotoGraphsAdmin(admin.ModelAdmin):
         response.context_data['votes_per_party'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__party__name', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__party__name')
         response.context_data['other_votes'] = other_votes.values('electoral_list__name').annotate(Sum('quantity'))
         response.context_data['other_votes_bycat'] = other_votes.values('category__pk', 'electoral_list__name').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__name')
-        response.context_data['votes_bylist'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('-quantity__sum')
-        response.context_data['other_votes_bylist'] = other_votes.values('category__pk', 'electoral_list__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('-quantity__sum')
+        
+        votes_bylist = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity'))
+        other_votes_bylist= other_votes.values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity'))
 
+        response.context_data['votes_bylist'] = votes_bylist.union(other_votes_bylist).order_by('-quantity__sum')
+        
         cat_filter = Category.objects.filter(election=election).first()
 
         response.context_data['totals_votes'] = votes.filter(category__pk=cat_filter.pk).aggregate(Sum('quantity'))
         response.context_data['totals_positives'] = votes.filter(category__pk=cat_filter.pk).exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
-        response.context_data['totals_tables'] = tables.exclude(closed=False).count()
+        response.context_data['totals_tables'] = { 'closed': tables.exclude(closed=False).count(), 'total': tables.count() }
         response.context_data['totals_electors'] = tables.aggregate(Sum('elctors_qty'))
         response.context_data['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))
 
