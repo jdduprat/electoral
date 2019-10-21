@@ -266,7 +266,7 @@ class VotoGraphsAdmin(admin.ModelAdmin):
         response.context_data['election'] = election
         response.context_data['categories'] = Category.objects.filter(election=election).order_by('order_reports')
         response.context_data['votes_per_party'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__party__name', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__party__name')
-        response.context_data['other_votes'] = other_votes.values('electoral_list__name').annotate(Sum('quantity'))
+        response.context_data['other_votes'] = other_votes.filter(category__pk=cat_filter.pk).values('electoral_list__name').annotate(Sum('quantity'))
         response.context_data['other_votes_bycat'] = other_votes.values('category__pk', 'electoral_list__name').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__name')
         
         votes_bylist = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity'))
