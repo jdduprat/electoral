@@ -23,12 +23,13 @@
                     <div class="form-group row">
                       <label for="school-select" class="control-label col-xs-3" style="margin-right: 5px;">Escuela: </label>
                       <div class="col-sm-9">
+                        <input hidden id='user_login' value={{ user.get_username }}>
                         <select class="form-control form-control-sm js-select2" id="school-select" style="width:100%">
                           {% for s in schools %}
-                            <option value="{{s.pk}}" class="school-change" address="{{s.address}}">{{s.name}}</option>
+                            <option value="{{s.pk}}" class="school-change" address="{{s.address}}" location="{{s.gmap_location}}">{{s.name}}</option>
                           {% endfor %}
                         </select>  
-                        <span id="span_address">ii</span>       
+                        <span id="span_address"></span>       
                       </div>             
                     </div>              
                   </div> 
@@ -38,7 +39,7 @@
                       <div class="col-sm-9">
                         <select class="form-control form-control-sm js-select2" id="table-select" style="width:100%">
                           {% for t in tables %}
-                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}" closed="{{t.closed}}" qty_el="{{t.elctors_qty}}">{{t.name}}</option>
+                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}" closed="{{t.closed}}" closedBy="{{t.closed_by}}" qty_el="{{t.elctors_qty}}">{{t.name}}</option>
                           {% endfor %}
                         </select>      
                       </div>
@@ -141,8 +142,6 @@
 <!-- SCRIPTSS -->
 <script>
     $(document).ready( function () {
-      setTimeout(function(){location.reload()}, 20000);
-
       $("input").focus(function() { $(this).select(); } );
 
       //$('.js-select2').select2();
@@ -154,7 +153,13 @@
       function filter_school () {
         school = $('#school-select').val();        
         address = $('.school-change[value='+school+']').attr('address');
-        $('#span_address').html(address);
+        gmapLocation = $('.school-change[value='+school+']').attr('location');
+        blank_ = 'target="_blank"'
+        if (gmapLocation == 'None') {
+          gmapLocation = '#';
+          blank_ = '';
+        }
+        $('#span_address').html('<a href="'+ gmapLocation +'" '+ blank_ +'>' + address + '</a>');
 
         $('#table-select option').hide();
         $('#table-select option[school="'+school+'"]').show();        
@@ -168,9 +173,10 @@
         var sel = document.getElementById('table-select');
         var selected = sel.options[sel.selectedIndex];
         var c = selected.getAttribute('closed');
+        var closedBy = selected.getAttribute('closedBy');
   
         if ( c == 'True' ){
-          $('#table-span').find('span').html('<strong>Mesa CERRADA</strong>');
+          $('#table-span').find('span').html('<strong>Mesa CERRADA por '+closedBy+'</strong>');
         } else {
           $('#table-span').find('span').html('');
         }
@@ -249,6 +255,7 @@
 
     function close_table() {
       table_id = $('#table-select').val();
+      user_name = $('#user_login').val();
       var mensaje;
       $.confirm({
                   title: '¡Atención!',
@@ -268,7 +275,7 @@
                             data:{ 'pk': table_id },
                             cache: false,
                             success: function(data){
-                                $('#table-span').find('span').html('<strong>Mesa CERRADA</strong>');
+                                $('#table-span').find('span').html('<strong>Mesa CERRADA por '+user_name+'</strong>');
                                 $.confirm({
                                   title: 'Mesa Cerrada',
                                   content: 'La mesa '+table_id+' se ha cerrado exitosamente',

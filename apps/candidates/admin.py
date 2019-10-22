@@ -66,6 +66,8 @@ def copy_election(self, request, queryset):
                 tables = Table.objects.filter(election=obj)
                 for t in tables:
                     t.election.add(new_election)
+                    t.closed = False
+                    t.closed_by = None
                     t.save()
 
             new_election.save()
