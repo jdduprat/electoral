@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import School, Table
+from apps.candidates.models import Election
 from django.contrib.admin.helpers import ActionForm
 from django import forms
 from django.utils.safestring import mark_safe
@@ -25,18 +26,30 @@ class UpdateActionForm(ActionForm):
 
 class SchoolAdmin(admin.ModelAdmin):    
     list_display = ['name', 'address', 'city', 'get_tables_total', 'get_users_assigned', 'show_gmap_url']
-    list_filter = ['city__department__province', 'city']
+    list_filter = ['table__election', 'city__department__province', 'city']
     fields= ['name', 'address', 'city', 'assigned_to', 'gmap_location']
     #actions = [to_assign, ]
     #action_form = UpdateActionForm
     
+    def get_queryset(self, request):
+        q = request.GET.copy()
+        if 'table__election__id__exact' in q:
+            self.election = q['table__election__id__exact']
+        else:
+            self.election = None
+
+        return super(SchoolAdmin, self).get_queryset(request)
+
     def get_users_assigned(self, obj):
         return ", ".join([u.username for u in obj.assigned_to.all()])
 
     get_users_assigned.short_description = 'USUARIO/S'
 
     def get_tables_total(self, obj):
-        return Table.objects.filter(school=obj).count()
+        if self.election:
+            return Table.objects.filter(school=obj, election=self.election).count()
+        else:
+            return Table.objects.filter(school=obj).count()
     
     get_tables_total.short_description = 'MESAS'
 
@@ -46,14 +59,6 @@ class SchoolAdmin(admin.ModelAdmin):
         else:
             url = '<a href="%s" target="_blank">%s</a>' % (obj.gmap_location, '<i class="icon-pin"></i>')
         return mark_safe(url)
-
-#    def get_queryset(self, request):
-#        qs = super(SchoolAdmin, self).get_queryset(request)
-
-#        if request.user.has_perm('voto.can_read_assigned_schools'):
-#            return qs.filter(assigned_to=request.user)
-#        else:
-#            return qs
 
 
 class TableAdmin(admin.ModelAdmin): 
