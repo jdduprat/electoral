@@ -76,9 +76,9 @@ copy_election.short_description = "Copiar Elección"
 
 
 class CopyActionForm(ActionForm):
-    copy_categories = forms.BooleanField(label='Copiar: Categorías')
-    copy_parties = forms.BooleanField(label='Partidos')
-    copy_tables = forms.BooleanField(label='Mesas')
+    copy_categories = forms.BooleanField(label='Copiar: Categorías', required=False)
+    copy_parties = forms.BooleanField(label='Partidos', required=False)
+    copy_tables = forms.BooleanField(label='Mesas', required=False)
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

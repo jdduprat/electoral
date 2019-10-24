@@ -33,7 +33,7 @@ resetPassword.short_description = "Crear contraseñas de los usuarios selecciona
 
 
 class UpdateActionForm(ActionForm): 
-    new_password = forms.CharField(label='Nueva Contraseña', max_length=30)
+    new_password = forms.CharField(label='Nueva Contraseña', max_length=30, required=False)
 
 
 def change_password(self, request, queryset):
