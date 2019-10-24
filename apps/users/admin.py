@@ -5,6 +5,7 @@ from django.contrib.admin.helpers import ActionForm
 from .models import Usuario
 from apps.places.models import School
 from django import forms
+from . filter.user_filters import HasSchoolsFilter
 
 class UsuarioInline(admin.StackedInline):
     model = Usuario
@@ -70,12 +71,22 @@ def unactive(self, request, queryset):
 unactive.short_description = "Desactivar los usuarios seleccionados"
 
 
+def remove_schools(self, request, queryset):
+    count = 0
+    for obj in queryset:
+        obj.school_set.clear()
+        obj.save()
+        count += 1
+    self.message_user(request, "Se actualizaron %s registros" % count )
+
+remove_schools.short_description = "Quitar Escuelas Asignadas"
+
 class CustomUserAdmin(UserAdmin):
     inlines = (UsuarioInline, SchoolInline)
-    list_filter = ('groups', 'is_active', 'is_staff', 'school') 
+    list_filter = ('groups', 'is_active', 'is_staff', 'school', HasSchoolsFilter) 
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_dni', 'get_tel', 'get_schools_assigned')
     list_select_related = ('usuario', )
-    actions = (active, unactive, resetPassword, change_password)
+    actions = (active, unactive, resetPassword, change_password, remove_schools)
     action_form = UpdateActionForm
 
     def get_dni(self, instance):

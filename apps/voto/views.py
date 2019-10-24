@@ -10,6 +10,7 @@ from django.db import DatabaseError
 @login_required
 def votesList(request):
     context = {} 
+    context['election'] = Election.objects.get(current=True)
     context['schools'] = School.objects.filter(assigned_to=request.user)
     context['tables'] = Table.objects.filter(election__current=True, school__assigned_to=request.user)
     context['categories'] = Category.objects.filter(election__current=True).order_by('order')
