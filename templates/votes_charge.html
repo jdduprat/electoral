@@ -255,11 +255,12 @@
 
     function close_table() {
       table_id = $('#table-select').val();
+      table_name = $('#table-select').html();
       user_name = $('#user_login').val();
       var mensaje;
       $.confirm({
                   title: '¡Atención!',
-                  content: '¿Esta seguro que desea cerrar la mesa '+table_id+'?',
+                  content: '¿Esta seguro que desea cerrar la mesa '+table_name+'?',
                   type: 'orange',
                   typeAnimated: true,
                   escapeKey: 'ok',
@@ -278,7 +279,7 @@
                                 $('#table-span').find('span').html('<strong>Mesa CERRADA por '+user_name+'</strong>');
                                 $.confirm({
                                   title: 'Mesa Cerrada',
-                                  content: 'La mesa '+table_id+' se ha cerrado exitosamente',
+                                  content: 'La mesa '+table_name+' se ha cerrado exitosamente',
                                   type: 'green',
                                   typeAnimated: true,
                                   escapeKey: 'ok',
