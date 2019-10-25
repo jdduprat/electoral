@@ -254,8 +254,10 @@
     }
 
     function close_table() {
-      table_id = $('#table-select').val();
-      table_name = $('#table-select').html();
+      var sel = document.getElementById('table-select');
+      var selected = sel.options[sel.selectedIndex];
+      table_id = selected.value;
+      table_name = selected.text;
       user_name = $('#user_login').val();
       var mensaje;
       $.confirm({
