@@ -279,6 +279,8 @@
                             cache: false,
                             success: function(data){
                                 $('#table-span').find('span').html('<strong>Mesa CERRADA por '+user_name+'</strong>');
+                                selected.setAttribute('closed', 'True');
+                                selected.setAttribute('closedBy', user_name);
                                 $.confirm({
                                   title: 'Mesa Cerrada',
                                   content: 'La mesa '+table_name+' se ha cerrado exitosamente',
