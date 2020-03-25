@@ -7,14 +7,14 @@ from apps.users.models import Usuario
 from django.http import HttpResponse, Http404
 from django.db import DatabaseError
 
-
 @login_required
 def votesList(request):
-    context = {}
+    context = {} 
+    context['election'] = Election.objects.get(current=True)
     context['schools'] = School.objects.filter(assigned_to=request.user)
-    context['tables'] = Table.objects.filter(school__assigned_to=request.user)
+    context['tables'] = Table.objects.filter(election__current=True, school__assigned_to=request.user)
     context['categories'] = Category.objects.filter(election__current=True).order_by('order')
-    context['votes'] = Voto.objects.filter(table__school__assigned_to=request.user, election__current=True).order_by('electoral_list__party', 'electoral_list', 'category__order')
+    context['votes'] = Voto.objects.filter(table__school__assigned_to=request.user, election__current=True).order_by('electoral_list__party__charge_order', 'electoral_list__charge_order', 'category__order', 'category__pk')
     
     return render(request, 'votes_charge.html', context)
 
@@ -68,21 +68,28 @@ from django.db.models import Count, Sum
 def votesChart(request):
     context={}
 
+    election = Election.objects.filter(current=True).last()
+    if not election:
+        return render(request, 'manteinance.html', context)
+
+    cat_filter = Category.objects.filter(election__current=True).first()
     votes = Voto.objects.filter(election__current=True)
     other_votes = Voto.objects.filter(election__current=True, electoral_list__party__isnull=True)
 
-    context['election'] = Election.objects.filter(current=True).last()
-    context['categories'] = Category.objects.filter(election__current=True)
+    context['election'] = election
+    context['categories'] = Category.objects.filter(election__current=True).order_by('order_reports')
     context['votes_per_party'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__party__name', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__party__name')
-    context['other_votes'] = other_votes.values('electoral_list__name').annotate(Sum('quantity'))
+    context['other_votes'] = other_votes.filter(category__pk=cat_filter.pk).values('electoral_list__name').annotate(Sum('quantity'))
     context['other_votes_bycat'] = other_votes.values('category__pk', 'electoral_list__name').annotate(Sum('quantity')).order_by('category__pk', 'electoral_list__name')
-    context['votes_bylist'] = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity')).order_by('-quantity__sum')
-    context['other_votes_bylist'] = other_votes.values('category__pk', 'electoral_list__name', 'electoral_list__head').annotate(Sum('quantity')).order_by('-quantity__sum')
-
-    context['totals_votes'] = votes.filter(category__pk=1).aggregate(Sum('quantity'))
-    context['totals_positives'] = votes.filter(category__pk=1).exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
-    context['totals_tables'] = Table.objects.filter(closed=True).count()
-    context['totals_electors'] = Table.objects.all().aggregate(Sum('elctors_qty'))
+    
+    votes_bylist = votes.exclude(electoral_list__party__isnull=True).values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity'))
+    other_votes_bylist= other_votes.values('category__pk', 'electoral_list__name', 'electoral_list__head', 'electoral_list__party__color').annotate(Sum('quantity'))
+    
+    context['votes_bylist'] = votes_bylist.union(other_votes_bylist).order_by('-quantity__sum')
+    context['totals_votes'] = votes.filter(category__pk=cat_filter.pk).aggregate(Sum('quantity'))
+    context['totals_positives'] = votes.filter(category__pk=cat_filter.pk).exclude(electoral_list__party__isnull=True).aggregate(Sum('quantity'))
+    context['totals_tables'] = { 'closed': Table.objects.filter(election__current=True, closed=True).count(), 'total': Table.objects.filter(election__current=True).count()}
+    context['totals_electors'] = Table.objects.filter(election__current=True).aggregate(Sum('elctors_qty'))
     context['qty_bycat'] = votes.values('category__pk').annotate(Sum('quantity'))
 
     return render(request, 'public_report.html', context)

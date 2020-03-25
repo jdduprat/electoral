@@ -87,8 +87,8 @@
     <table>
         <thead>
             <tr>
-                <th> <div class="text"> <a href="#"><strong>Escuela </strong></a> </div> </th>
-                <th> <div class="text"> <a href="#"><strong>Mesa </strong></a> </div> </th>
+                <!-- <th> <div class="text"> <a href="#"><strong>Escuela </strong></a> </div> </th>
+                <th> <div class="text"> <a href="#"><strong>Mesa </strong></a> </div> </th> -->
                 <th> <div class="text"> <a href="#"><strong>Partido </strong></a> </div> </th>
                 <th> <div class="text"> <a href="#"><strong>Lista </strong></a> </div> </th>
                 <th> <div class="text"> <a href="#"><strong>Categoría </strong></a> </div> </th>
@@ -99,8 +99,8 @@
         <tbody>
             {% for row in summary %}
             <tr class="{% cycle 'row1' 'row2' %}">
-                <td> {{ row.table__school }} </td>
-                <td> {{ row.table }} </td>
+               <!--  <td> {{ row.table__school }} </td>
+                <td> {{ row.table }} </td> -->
                 <td> {% if not row.electoral_list__party__name == None %} {{ row.electoral_list__party__name }} {% endif %} </td>
                 <td> {{ row.electoral_list__name }} - {{ row.electoral_list__head }} </td>
                 <td> {{ row.category__name }} </td>

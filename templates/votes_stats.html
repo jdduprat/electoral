@@ -1,0 +1,74 @@
+{% extends "admin/change_list.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% load i18n %}
+{% load mathtags %}
+{% load tz %}
+
+{% block content_title %}
+    <h1> {% trans 'Reporte de Votos' %} </h1>
+    <script src="{% static 'mines/bower_components/chart.js/dist/Chart.min.js'%}"></script>
+{% endblock %}
+
+{% block extrahead %}
+  <link href="{% static 'favicon.ico'%}" rel="shortcut icon">
+  <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500" rel="stylesheet" type="text/css">
+  <link href="{% static 'mines/css/main.css'%}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+{% endblock %}
+ 
+{% block result_list %}
+<div class="content-i col-sm-8" style="margin: 0 auto;">
+  <div class="content-box">
+      <div class="col-sm-12">
+        <div class='element-wrapper'>
+          <h6 class="element-header">Resultados Parciales</h6> 
+          <h5 style="text-align: center;">Elecciones {{election.description}}</h5>
+          <div class="tab-content">
+            <div class="water-mark"></div>
+            <div class="tab-pane active" id="tab_overview">
+                <div class="timed-activities padded">
+                    <div class="timed-activity">
+                        <div class="ta-record-w">      
+                            <h6>Votantes</h6><br>                           
+                            <div class="ta-record">                           
+                                <div class="ta-activity">Electores Inscriptos: {{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}}</div>
+                            </div>
+                            <div class="ta-record">
+                                <div class="ta-activity">Votos Emitidos: {{totals_votes.quantity__sum|default_if_none:0|intcomma}} de {{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}} // {{ totals_votes.quantity__sum | default:0 | percentof:totals_electors.elctors_qty__sum }}</div>
+                            </div>     
+                            <br><h6>Escuelas y Mesas</h6><br>
+                            <div class="ta-record">
+                                <div class="ta-activity">Mesas Escrutadas: {{qty_tables_closed}} de {{qty_tables_total}} // {{ qty_tables_closed | default:0 | percentof:qty_tables_total }}</div>
+                            </div>
+                            <div class="ta-record">
+                                <div class="ta-activity">Escuelas con más mesas cerradas: {{school_more_closed.name}} // {{school_more_closed.qty_closed}} mesas cerradas</div>
+                            </div>     
+                            <br><h6>Ganadores</h6><br>
+                        {% for v in totals_votes_by_cat %}     
+                            <div class="ta-record">
+                                <div class="ta-activity">{{ v }}</div>
+                            </div>
+                        {% endfor %}   
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div> <!--tab-->
+        </div>
+    </div>
+  </div>
+</div>
+<!-- SCRIPTSS -->
+<script src="{% static 'mines/bower_components/jquery/dist/jquery.min.js'%}"></script>
+<script>
+    $(document).ready(function(){
+        setTimeout(function(){location.reload()}, 20000);
+    });
+</script>
+{% endblock %}
+
+{% block pagination %}{% endblock %}

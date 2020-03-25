@@ -13,7 +13,7 @@
       <div class="col-sm-12">
         <div class="element-wrapper">
           <h6 class="element-header">
-            Carga de Conteo de Votos
+            Carga de Conteo de Votos ({{election.description}})
           </h6>
           <div class="element-box-tp">
             <div class="controls-above-table">
@@ -23,11 +23,13 @@
                     <div class="form-group row">
                       <label for="school-select" class="control-label col-xs-3" style="margin-right: 5px;">Escuela: </label>
                       <div class="col-sm-9">
+                        <input hidden id='user_login' value={{ user.get_username }}>
                         <select class="form-control form-control-sm js-select2" id="school-select" style="width:100%">
                           {% for s in schools %}
-                            <option value="{{s.pk}}" class="school-change">{{s.name}}</option>
+                            <option value="{{s.pk}}" class="school-change" address="{{s.address}}" location="{{s.gmap_location}}">{{s.name}}</option>
                           {% endfor %}
-                        </select>         
+                        </select>  
+                        <span id="span_address"></span>       
                       </div>             
                     </div>              
                   </div> 
@@ -37,7 +39,7 @@
                       <div class="col-sm-9">
                         <select class="form-control form-control-sm js-select2" id="table-select" style="width:100%">
                           {% for t in tables %}
-                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}" closed="{{t.closed}}">{{t.name}}</option>
+                            <option value="{{t.pk}}" class="table-change" school="{{t.school.pk}}" closed="{{t.closed}}" closedBy="{{t.closed_by}}" qty_el="{{t.elctors_qty}}">{{t.name}}</option>
                           {% endfor %}
                         </select>      
                       </div>
@@ -83,7 +85,7 @@
                   <tr>
                     {% for c in categories %}
                       <th>
-                        {{c.name}} ({{c.order}})
+                        {{c.name}}
                       </th>
                     {%endfor%}
                   </tr>
@@ -103,22 +105,31 @@
                   </tr>
                   {%endfor%} {% endcomment %}
                   
-                  <!--script>
-                    console.log('{{categories}}');
-                  </script-->  
                   {% regroup votes by electoral_list as category_votes %}
                   {% for cv in category_votes %} 
                     <tr>
                       <td>{{ cv.grouper.party.name }}</td>
                       <td>{{ cv.grouper }}</td>
                       {% for item in cv.list %}
-                        <td school={{item.table.school.pk}} table={{item.table.pk}} data>
+                        <td school={{item.table.school.pk}} table={{item.table.pk}} category={{item.category.pk}} data>
                           <input type="number" class="form-control bright" value={{item.quantity}} onchange="update_vote({{item.pk}}, this)">
                         </td>
                       {% endfor %}
                     </tr>
                   {% endfor %}
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="2" data-valign="middle">
+                      Totales:
+                    </td>
+                    {% for c in categories %}
+                      <td id=foot-{{c.pk}} data-valign="middle">
+                        0
+                      </td>
+                    {%endfor%}
+                  </tr>
+                </tfoot>
               </table>
             </div>                      
           </div>
@@ -127,12 +138,10 @@
     </div>
   </div>
 </div>
-{% endblock content %}
-{% block extra_js%}
 
+<!-- SCRIPTSS -->
 <script>
     $(document).ready( function () {
-
       $("input").focus(function() { $(this).select(); } );
 
       //$('.js-select2').select2();
@@ -142,7 +151,15 @@
       $('#table-select').on('change', filter_table);
 
       function filter_school () {
-        school = $('#school-select').val();
+        school = $('#school-select').val();        
+        address = $('.school-change[value='+school+']').attr('address');
+        gmapLocation = $('.school-change[value='+school+']').attr('location');
+        blank_ = 'target="_blank"'
+        if (gmapLocation == 'None') {
+          gmapLocation = '#';
+          blank_ = '';
+        }
+        $('#span_address').html('<a href="'+ gmapLocation +'" '+ blank_ +'>' + address + '</a>');
 
         $('#table-select option').hide();
         $('#table-select option[school="'+school+'"]').show();        
@@ -156,9 +173,10 @@
         var sel = document.getElementById('table-select');
         var selected = sel.options[sel.selectedIndex];
         var c = selected.getAttribute('closed');
+        var closedBy = selected.getAttribute('closedBy');
   
         if ( c == 'True' ){
-          $('#table-span').find('span').html('Mesa CERRADA');
+          $('#table-span').find('span').html('<strong>Mesa CERRADA por '+closedBy+'</strong>');
         } else {
           $('#table-span').find('span').html('');
         }
@@ -175,48 +193,121 @@
 
       $('#save-btn').on('click', update_all);
       filter_school();    
+      
+      /*var total = 0;
+      $("input").first().change();
+      $('td[school="'+school+'"][table="'+table+'"][category="'+category+'"]').each(function(i, el){
+        total += parseInt($(this).find('input').val());
+        $('#foot-'+category).val(total);
+      });*/      
     });
     
     var token = '{{csrf_token}}';
     
     function update_vote( id, obj ) {
-      $.ajax({
-            type: 'POST',
-            headers: { "X-CSRFToken": token },
-            url : "/update_vote/",
-            data:{ 'pk':id, 'qty': obj.value },
-            cache: false,
-            success: function(data){
-                obj.setAttribute("saved", "");
-            },
-            fail: function (data) {
-                console.log("Error: " + data);
-            }                
+      var school = obj.parentElement.getAttribute('school');
+      var table = obj.parentElement.getAttribute('table');
+      var category = obj.parentElement.getAttribute('category');
+      var total = 0;
+      $('td[school="'+school+'"][table="'+table+'"][category="'+category+'"]').each(function(i, el){
+        total += parseInt($(this).find('input').val());
       });
+      var sel = document.getElementById('table-select');
+      var selected = sel.options[sel.selectedIndex];
+      var qty_el = selected.getAttribute('qty_el');
+
+      if (total <= qty_el){
+        $.ajax({
+              type: 'POST',
+              headers: { "X-CSRFToken": token },
+              url : "/update_vote/",
+              data:{ 'pk':id, 'qty': obj.value },
+              cache: false,
+              success: function(data){
+                  obj.setAttribute("saved", "");
+                  $('#foot-'+category).html(total);
+              },
+              error: function(xhr, status, error){
+                  alert('Error - Algo salió mal en el Servidor');
+                  obj.value=0;
+              }             
+        });
+      }else{
+        $.confirm({
+          title: 'Error',
+          content: 'La cantidad ingresada supera la cantidad de electores de la mesa',
+          type: 'red',
+          typeAnimated: true,
+          escapeKey: 'ok',
+          buttons: {
+            ok: {
+                text: 'Aceptar',
+                btnClass: 'btn-red',
+                action: function(){
+                  obj.value=0;
+                  $(obj).focus();
+                }
+            }
+          }
+        });
+      }
     }
 
     function close_table() {
-      table_id = $('#table-select').val();
+      var sel = document.getElementById('table-select');
+      var selected = sel.options[sel.selectedIndex];
+      table_id = selected.value;
+      table_name = selected.text;
+      user_name = $('#user_login').val();
       var mensaje;
-      var opcion = confirm("¿Finalizó la carga? ¿Desea cerrar la mesa seleccionada?");
-      if (opcion == true) {
-        $.ajax({
-            type: 'POST',
-            headers: { "X-CSRFToken": token },
-            url : "/close_table/",
-            data:{ 'pk': table_id },
-            cache: false,
-            success: function(data){
-                console.log("mesa cerrada " + table_id);
-            },
-            fail: function (data) {
-                console.log("Error: " + data);
-            }                
-        });
-      } else {
-         //console.log("Cancela");
-      }      
+      $.confirm({
+                  title: '¡Atención!',
+                  content: '¿Esta seguro que desea cerrar la mesa '+table_name+'?',
+                  type: 'orange',
+                  typeAnimated: true,
+                  escapeKey: 'ok',
+                  buttons: {
+                    ok: {
+                        text: 'Aceptar',
+                        btnClass: 'btn-orange',
+                        action: function(){
+                          $.ajax({
+                            type: 'POST',
+                            headers: { "X-CSRFToken": token },
+                            url : "/close_table/",
+                            data:{ 'pk': table_id },
+                            cache: false,
+                            success: function(data){
+                                $('#table-span').find('span').html('<strong>Mesa CERRADA por '+user_name+'</strong>');
+                                selected.setAttribute('closed', 'True');
+                                selected.setAttribute('closedBy', user_name);
+                                $.confirm({
+                                  title: 'Mesa Cerrada',
+                                  content: 'La mesa '+table_name+' se ha cerrado exitosamente',
+                                  type: 'green',
+                                  typeAnimated: true,
+                                  escapeKey: 'ok',
+                                  buttons: {
+                                    ok: {
+                                        text: 'Aceptar',
+                                        btnClass: 'btn-green'
+                                    }
+                                  }
+                                });
+                            },
+                            fail: function (data) {
+                                console.log("Error: " + data);
+                            }                
+                        });
+                      }
+                    },
+                    cancel: {
+                        text: 'Cancelar'
+                    }
+                  }
+                });
+          
     }
 </script>
 
-{% endblock extra_js%}
+{% endblock content %}

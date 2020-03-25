@@ -1,17 +1,19 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% load humanize %}
+{% load mathtags %}
 
 {% block content %}
-<div class="content-i col-sm-6" style="margin: 0 auto;">
+<div class="content-i col-sm-8" style="margin: 0 auto;">
   <div class="content-box">
     <div style="padding-left: 50px; text-align: right; padding-right: 20px;">
       <a href="/admin" style="color: #261D1D; text-decoration: underline; font-size: 14px; letter-spacing: 1px;">Gestión</a>
       <a href="/carga" style="color: #261D1D; text-decoration: underline; font-size: 14px; margin-left: 20px; letter-spacing: 1px;">Carga</a>
     </div>
     <div class="col-sm-12">
-        <div class='element-wrapper'>
+        <div class='element-wrapper centered'>
           <h6 class="element-header">Resultados Parciales</h6> 
+          <h6 style="text-align: center;">Elecciones {{election.description}}</h6>
           <div class="row pt-4">            
             <div class="water-mark"></div>
             <div class="col-sm-8">
@@ -32,34 +34,46 @@
             <div class="col-sm-4">
               <div class="element-box-tp">                  
                 <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                  <a class="element-box el-tablo centered smaller" href="#">
                     <div class="label">Electores Inscriptos</div>
                     <div class="value">{{totals_electors.elctors_qty__sum|default_if_none:0|intcomma}}</div>
                   </a>
                 </div>      
                 <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                  <a class="element-box el-tablo centered smaller" href="#">
                     <div class="label">Mesas Escrutadas</div>
-                    <div class="value">{{totals_tables}}</div>
+                    <div class="value">{{totals_tables.closed}} de {{totals_tables.total}}</div>
+                    <div class="font-weight-bold trending-up-basic">
+                      <span>{{totals_tables.closed | default:0 | percentof:totals_tables.total}}</span>
+                    </div>
                   </a>
                 </div>                     
                 <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                  <a class="element-box el-tablo centered smaller" href="#">
                     <div class="label">Votos Emitidos</div>
                     <div class="value">{{totals_votes.quantity__sum|default_if_none:0|intcomma}}</div>
+                    <div class="font-weight-bold trending-up-basic">
+                      <span>{{totals_votes.quantity__sum | default:0 | percentof:totals_electors.elctors_qty__sum}}</span>
+                    </div>
                   </a>
                 </div>                
                 <div class="col-sm-12">
-                  <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                  <a class="element-box el-tablo centered smaller" href="#">
                     <div class="label">Votos Positivos</div>
                     <div class="value">{{totals_positives.quantity__sum|default_if_none:0|intcomma}}</div>
+                    <div class="font-weight-bold trending-up-basic">
+                      <span>{{totals_positives.quantity__sum | default:0 | percentof:totals_votes.quantity__sum}}</span>
+                    </div>
                   </a>
                 </div>      
                 {% for v in other_votes %}                        
                   <div class="col-sm-12">
-                    <a class="element-box el-tablo centered trend-in-corner smaller" href="#">
+                    <a class="element-box el-tablo centered smaller" href="#">
                       <div class="label">{{v.electoral_list__name}}</div>
                       <div class="value">{{v.quantity__sum|default_if_none:0|intcomma}}</div>
+                      <div class="font-weight-bold trending-up-basic">
+                        <span>{{v.quantity__sum | default:0 | percentof:totals_votes.quantity__sum}}</span>
+                      </div>
                     </a>
                   </div> 
                 {% endfor %}                     
@@ -249,26 +263,18 @@
           colors_party[c] = [];
           colors_border_party[c] = [];
         }   
-        var name = '{{ v.electoral_list__head }}'; 
-        name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 5) + ' - ' + name);
+      var name = '{{ v.electoral_list__head }}'; 
+      //name = name.substr(0, 1) + '. ' + name.substr(name.indexOf(" "), 99);
+      if (name.length === 1){
+        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(3, 99));
+      }else{        
+        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(3, 99) + ' - ' + name);
+      }
         votes_per_party_data[c].push('{{v.quantity__sum}}');
         color = '{{v.electoral_list__party__color}}';
-        colors_party[c].push(color);
-        colors_border_party[c].push(color); 
-      {% endfor %}   
-
-      {% for v in other_votes_bylist %}  
-        c = parseInt('{{v.category__pk}}'); 
-        if (votes_per_party_labels[c] === undefined) {
-          votes_per_party_labels[c] = [];
-          votes_per_party_data[c] = [];
-          colors_party[c] = [];
-          colors_border_party[c] = [];
-        }    
-        votes_per_party_labels[c].push('{{v.electoral_list__name}}'.substr(0, 15));
-        votes_per_party_data[c].push('{{v.quantity__sum}}');
-        color = "rgba(" + dynamicColors() + ", 0.7)";
+        if (color === 'None'){
+          color = "rgba(" + dynamicColors() + ", 0.7)";
+        }
         colors_party[c].push(color);
         colors_border_party[c].push(color); 
       {% endfor %}   
@@ -325,7 +331,7 @@
                           var data = dataset.data[index];    
                           //console.log(dataset);                  
                           var x_ = bar._model.x;
-                          if ( x_ < 300 ) {
+                          if ( x_ < 600 ) {
                             x_ += 30;
                             //ctx.fillStyle = "#000000";
                           }else{
